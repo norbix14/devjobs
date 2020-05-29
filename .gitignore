@@ -1,0 +1,8 @@
+node_modules/*
+MongodbAtlasInfo.txt
+variables.env
+.DS_Store
+test/*
+public/uploads/cv/*
+public/uploads/perfiles/*
+TODO.txt

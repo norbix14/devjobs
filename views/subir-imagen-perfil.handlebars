@@ -1,0 +1,59 @@
+{{!-- Formulario para subir o actualizar la imagen de perfil --}}
+<!-- LOADER -->
+<div class="loader-container d-none">
+	<div class="mask" id="mask">
+		<div class="loader">
+			<div class="prespinner">
+				<!-- <div class="spinner"></div> -->
+			</div>
+		</div>
+	</div>
+</div>
+<main class="contenedor">
+	<h3>Es recomendable que comprimas tu imagen usando <a href="https://tinypng.com/" target="_blank">TinyPng</a>, <a href="https://imagecompressor.com/es/" target="_blank">Optimizilla</a> o cualquier servicio que prefieras para que la carga sea más rápida y óptima</h3>
+	<form method="post" id="subir-imagen-perfil" class="default-form" enctype="multipart/form-data">
+		<div class="campo">
+			<label>Imagen de perfil</label>
+			<input type="file" name="imagen" required>
+			{{#if usuario.imagen}}
+				<img src="{{usuario.imagen}}" class="admin-perfil" 
+					 alt="Perfil" title="Imagen de perfil actual">
+			{{else}}
+				<img src="/img/user.png" class="admin-perfil" 
+					 alt="Perfil" title="Imagen por defecto">
+			{{/if}}
+		</div>
+		<div class="campo">
+			<input type="submit" class="btn btn-azul" value="Subir">
+		</div>
+	</form>
+</main>
+{{#if imagenes.length}}
+	<div class="contenedor">
+		<h2>Tus imagenes cargadas</h2>
+		<br>
+		<h3>Doble click para ver lo que puedes hacer con la imagen</h3>
+		<br>
+		<div class="swiper-container">
+			<div class="swiper-wrapper">
+				{{#each imagenes as |imagen|}}
+					<img src="{{imagen.secure_url}}" class="swiper-slide" 
+						 data-public-id="{{imagen.public_id}}">
+				{{/each}}
+			</div>
+			<!-- si necesitamos paginacion -->
+		    <div class="swiper-pagination"></div>
+		    <!-- si necesitamos botones de paginacion -->
+		    <!-- 
+		    <div class="swiper-button-prev"></div>
+		    <div class="swiper-button-next"></div>
+			-->
+		    <!-- si necesitamos scrollbar -->
+		    <!-- <div class="swiper-scrollbar"></div> -->
+		</div>
+	</div>
+{{else}}
+	<br>
+	<h2>Aún no tienes imagenes de perfil cargadas</h2>
+	<br>
+{{/if}}

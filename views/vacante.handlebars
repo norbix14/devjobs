@@ -1,0 +1,78 @@
+{{!-- Mostrar la vacante publicada --}}
+<div class="contenido-superior vacante contenedor">
+	<div class="caja">
+		<p class="etiqueta">Empresa</p>
+		<p class="nombre">{{vacante.empresa}}</p>
+	</div>
+	<div class="caja">
+		<p class="etiqueta">Ubicación</p>
+		<p class="nombre">{{vacante.ubicacion}}</p>
+	</div>
+	<div class="caja">
+		<p class="etiqueta">Contrato</p>
+		<p class="nombre contrato">{{vacante.contrato}}</p>
+	</div>
+	<div class="caja">
+		<p class="etiqueta">Salario</p>
+		<p class="nombre">U$D {{vacante.salario}}</p>
+	</div>
+</div>
+<div class="vacante-contenedor contenedor">
+	<main class="contenido">
+		<h2>Descripción del puesto</h2>
+		<div class="vacante-descripcion">
+			{{{vacante.descripcion}}}
+		</div>
+		<a href="/vacantes/editar/{{vacante.url}}" 
+		   class="btn btn-azul editar-btn">Editar</a>
+	</main>
+	<aside class="sidebar">
+		<h2>Conocimientos deseados</h2>
+		<ul class="skills">
+			{{#each vacante.skills}}
+				<li>{{this}}</li>
+			{{/each}}
+		</ul>
+	</aside>
+</div>
+<div class="contenedor datos-reclutador">
+	{{#if vacante.autor}}
+		<div class="enviar-datos">
+			<h2>Contactar al reclutador</h2>
+			<p>LLenar el formulario, subir currículum y pronto te contactaremos</p>
+			<form action="/vacantes/{{vacante.url}}" method="post" 
+				  class="default-form" enctype="multipart/form-data">
+				<div class="campo">
+					<label>Nombre</label>
+					<input type="text" name="nombre" placeholder="Tu nombre"
+						   required>
+				</div>
+				<div class="campo">
+					<label>Email</label>
+					<input type="email" name="email" placeholder="Tu email"
+						   required>
+				</div>
+				<div class="campo">
+					<label>Currículum Vitae (PDF)</label>
+					<input type="file" name="cv" required>
+				</div>
+				<div class="campo">
+					<input type="submit" value="Enviar datos" class="btn btn-verde">
+				</div>
+			</form>
+		</div>
+		<div class="info-reclutador">
+			<h2>Información del reclutador</h2>
+			{{#if vacante.autor.nombre}}
+				<p>{{vacante.autor.nombre}}</p>
+			{{/if}}
+			{{#if vacante.autor.imagen}}
+				<img src="{{vacante.autor.imagen}}" alt="Perfil">
+			{{else}}
+				<img src="/img/user.png" alt="Perfil por defecto">
+			{{/if}}
+		</div>
+	{{else}}
+		<h2>Esta vacante no tiene datos de su autor</h2>
+	{{/if}}
+</div>

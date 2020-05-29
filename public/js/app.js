@@ -1,0 +1,5 @@
+import skills from './modulos/skills'
+import alertas from './modulos/alertas'
+import vacantes from './modulos/vacantes'
+import swiper from './modulos/swiper'
+import subir from './modulos/subir-perfil'

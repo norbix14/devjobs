@@ -1,0 +1,32 @@
+{{!-- Formulario para crear una nueva cuenta --}}
+<main class="contenedor">
+	<form class="default-form" action="/crear-cuenta" method="post">
+		<div class="campo">
+			<label>Nombre</label>
+			<input type="text" name="nombre" 
+				   placeholder="Ej: John Doe Smithers" required autofocus>
+		</div>
+		<div class="campo">
+			<label>Email</label>
+			<input type="email" name="email" 
+				   placeholder="Ej: johndoesmithers@mail.com" required>
+		</div>
+		<div class="campo">
+			<label>Contraseña</label>
+			<input type="password" name="password" 
+				   placeholder="Debe ser de mas de 8 caracteres para mayor seguridad"
+				   required>
+		</div>
+		<div class="campo">
+			<label>Repetir contraseña</label>
+			<input type="password" name="confirmar" 
+				   placeholder="Debe coincidir con la anterior" required>
+		</div>
+		<div class="campo acciones">
+			<a href="/iniciar-sesion">Iniciar sesión</a>
+		</div>
+		<div class="campo">
+			<input type="submit" value="Crear cuenta" class="btn btn-azul">
+		</div>
+	</form>
+</main>

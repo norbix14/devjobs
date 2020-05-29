@@ -1,0 +1,22 @@
+{{!-- Formulario para iniciar sesion --}}
+<main class="contenedor">
+	<form class="default-form" action="/iniciar-sesion" method="post">
+		<div class="campo">
+			<label>Email</label>
+			<input type="email" name="email" required autofocus 
+				   placeholder="Ej: johndoesmithers@mail.com">
+		</div>
+		<div class="campo">
+			<label>Contraseña</label>
+			<input type="password" name="password" required
+				   placeholder="Tu contraseña">
+		</div>
+		<div class="campo acciones">
+			<a href="/crear-cuenta">Crear cuenta</a>
+			{{!-- <a href="/reestablecer-password">Olvidé mi contraseña</a> --}}
+		</div>
+		<div class="campo">
+			<input type="submit" value="Iniciar sesión" class="btn btn-azul">
+		</div>
+	</form>
+</main>

@@ -1,0 +1,72 @@
+{{!-- Layout principal --}}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon shortcut" type="img/png" href="/img/nodejs.png">
+	<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+	<!-- Trix editor -->
+	<link rel="stylesheet" href="/css/trix.css">
+	<!-- SWIPER CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.6/css/swiper.min.css">
+    <!-- Dark theme SweetAlert2 -->
+	<!-- <link rel="stylesheet" href="@sweetalert2/theme-dark/dark.css"> -->
+    <!-- Main css -->
+	<link rel="stylesheet" href="/css/app.css">
+	<title>{{nombrePagina}}</title>
+</head>
+<body>
+	<div class="nombre-sitio contenedor">
+		<h1>
+			<a href="/">devJobs</a>
+		</h1>
+		{{#if barra}}
+			<div class="buscador">
+				<form action="/buscador" method="post">
+					<input type="text" name="q" class="buscar">
+					<input type="submit" value="Buscar">
+				</form>
+			</div>
+		{{/if}}
+		{{#if cerrarSesion}}
+			<div class="cerrar-sesion">
+				<p>Hola {{nombre}}</p>
+				{{#if imagen}}
+					<img src="{{imagen}}" class="admin-perfil" alt="Perfil">
+				{{else}}
+					<img src="/img/user.png" class="admin-perfil" alt="Perfil">
+				{{/if}}
+				<a href="/administracion">Admin</a>
+				<a href="/cerrar-sesion">Cerrar sesión</a>
+			</div>
+		{{/if}}
+	</div>
+	<header class="site-header contenedor separador">
+		<h2>{{nombrePagina}}</h2>
+		{{#if tagline}}
+			<p class="tagline">{{tagline}}</p>
+		{{/if}}
+		{{#if boton}}
+			<a href="/vacantes/nueva" class="btn btn-azul">Publicar nueva vacante</a>
+		{{/if}}
+	</header>
+	<div class="contenido-principal contenedor">
+		{{#if mensajes}}
+			<div class="alertas">
+				{{#mostrarAlertas mensajes}}
+				{{/mostrarAlertas}}
+			</div>
+		{{/if}}
+		{{{body}}}
+	</div>
+	<!-- Trix editor -->
+	<script src="/js/trix.js"></script>
+	<!-- Swiper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.6/js/swiper.min.js"></script>
+	<!-- Dark theme SweetAlert2 -->
+    <!-- <script src="sweetalert2/dist/sweetalert2.min.js"></script> -->
+    <!-- Main js -->
+	<script src="/dist/bundle.js"></script>
+</body>
+</html>
