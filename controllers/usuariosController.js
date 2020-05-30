@@ -6,6 +6,7 @@ const multer = require('multer')
 const shortid = require('shortid')
 const { v4: uuidv4 } = require('uuid')
 const fs = require('fs-extra')
+const path = require('path')
 const Cloudinary = require('../handlers/cloudinary')
 const Tinify = require('../handlers/tinify')
 
@@ -23,7 +24,7 @@ const configuracionMulter = {
 	},
 	storage: fileStorage = multer.diskStorage({
 		destination: (req, file, callback) => {
-			callback(null, __dirname + '../../public/uploads/perfiles')
+			callback(null, path.join(__dirname, '../public/uploads/perfiles'))
 		},
 		filename: (req, file, callback) => {
 			const fileParts = file.mimetype.split('/')
@@ -87,14 +88,14 @@ exports.subirImagen = (req, res, next) => {
 exports.optimizarImagen = async (req, res, next) => {
 	if(req.file) {
 		if(req.file.size >= 491520) {
-			const desde = __dirname + '../../public/uploads/perfiles/' + req.file.filename
-			const hacia = __dirname + '../../public/uploads/perfiles/optimizadas/' + req.file.filename
+			const desde = path.join(__dirname, '../public/uploads/perfiles/' + req.file.filename)
+			const hacia = path.join(__dirname, '../public/uploads/perfiles/optimizadas/' + req.file.filename)
 			const tiny = await Tinify.tinifyImage(desde, hacia)
 			if(tiny.ok) {
 				return next()
 			} else {
 				// retorno next() tambien en caso de sobrepasar el limite de optimizaciones
-				console.log('Error con Tinify\n', tiny.message)
+				// console.log('Error con Tinify\n', tiny.message)
 				// req.flash('error', tiny.message)
 				// return res.redirect('/administracion')
 				return next()
@@ -118,7 +119,7 @@ exports.guardarImagenPerfil = async (req, res) => {
 	const usuario = await Usuarios.findById(req.user._id)
 	if(req.file) {
 		let imagen = ''
-		const imagenOptimizada = __dirname + '../../public/uploads/perfiles/optimizadas/' + req.file.filename
+		const imagenOptimizada = path.join(__dirname, '../public/uploads/perfiles/optimizadas/' + req.file.filename)
 		if(fs.existsSync(imagenOptimizada)) {
 			imagen = imagenOptimizada
 		} else {
