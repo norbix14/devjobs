@@ -80,11 +80,9 @@ document.addEventListener('DOMContentLoaded', function() {
 					if(resultado.value) {
 						switch (resultado.value) {
 							case 'elegir':
-								// elegir nueva foto como perfil
 								usarImagenPara('cambiar-imagen-perfil', public_id, 'administracion')
 								break
 							case 'borrar':
-								// borrar la foto
 								Swal.fire({
 									title: '¿Quieres hacerlo?',
 									text: 'Esto no se puede revertir',

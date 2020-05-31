@@ -14,17 +14,26 @@
 	<form method="post" id="subir-imagen-perfil" class="default-form" enctype="multipart/form-data">
 		<div class="campo">
 			<label>Imagen de perfil</label>
-			<input type="file" name="imagen" required>
+			<input type="file" name="imagen" id="img-uploader" required>
 			{{#if usuario.imagen}}
 				<img src="{{usuario.imagen}}" class="admin-perfil" 
-					 alt="Perfil" title="Imagen de perfil actual">
+					 id="perfil-actual" alt="Perfil" title="Imagen de perfil actual">
 			{{else}}
 				<img src="/img/user.png" class="admin-perfil" 
-					 alt="Perfil" title="Imagen por defecto">
+					 id="perfil-actual" alt="Perfil" title="Imagen por defecto">
 			{{/if}}
 		</div>
 		<div class="campo">
-			<input type="submit" class="btn btn-azul" value="Subir">
+			{{!-- BOTON QUE CARGA IMAGEN A CLOUDINARY --}}
+			<button type="button" class="btn btn-azul" id="cargar-imagen">Cargar</button>
+			{{!-- BOTON QUE SUBE LOS DATOS DE LA IMAGEN A MONGODB --}}
+			<button type="button" class="btn btn-verde d-none" id="subir-imagen">Subir</button>
+			{{!-- BOTON PARA CANCELAR LA SUBIDA Y ELIMINAR DE CLOUDINARY --}}
+			<button type="button" class="btn btn-rojo d-none" id="cancelar-imagen">Cancelar</button>
+			{{!-- <input type="submit" class="btn btn-azul" value="Subir"> --}}
+		</div>
+		<div class="progress-bar">
+			<progress class="progressbar d-none" id="img-upload-bar" value="0" max="100"></progress>
 		</div>
 	</form>
 </main>

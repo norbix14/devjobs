@@ -6,6 +6,7 @@ const multer = require('multer')
 const shortid = require('shortid')
 const { v4: uuidv4 } = require('uuid')
 const fs = require('fs-extra')
+const path = require('path')
 
 
 /**
@@ -76,7 +77,7 @@ const configuracionMulter = {
 	},
 	storage: fileStorage = multer.diskStorage({
 		destination: (req, file, callback) => {
-			callback(null, __dirname + '../../public/uploads/cv')
+			callback(null, path.join(__dirname, '../public/uploads/cv'))
 		},
 		filename: (req, file, callback) => {
 			const fileParts = file.mimetype.split('/')
@@ -138,18 +139,34 @@ exports.subirCv = (req, res, next) => {
 exports.contactar = async (req, res, next) => {
 	const vacante = await Vacante.findOne({ url: req.params.url })
 	if(!vacante) return next()
-	const nuevoCandidato = {
-		nombre: req.body.nombre,
-		email: req.body.email,
-		cv: req.file.filename,
-		vacante: vacante._id
-	}
-	vacante.candidatos.push(nuevoCandidato)
-	const cv = new Cv(nuevoCandidato)
-	await cv.save()
-	await vacante.save()
-	req.flash('correcto', 'Gracias, tus datos fueron enviados')
-	res.redirect('/')
+	// sanitizar los campos
+    const campos = [
+        body('nombre').not().isEmpty().withMessage('El nombre es obligatorio').escape(),
+        body('email').isEmail().withMessage('El email es obligatorio').normalizeEmail(),
+        body('cv').isURL().withMessage('La URL es obligatoria')
+    ]
+	await Promise.all(campos.map(campo => campo.run(req)))
+	const errores = validationResult(req)
+	// si no hay errores
+    if (errores.isEmpty()) {
+		const nuevoCandidato = {
+			nombre: req.body.nombre,
+			email: req.body.email,
+			cv: req.body.cv,
+			vacante: vacante._id
+		}
+		vacante.candidatos.push(nuevoCandidato)
+		const cvCandidato = new Cv(nuevoCandidato)
+		await cvCandidato.save()
+		await vacante.save()
+		req.flash('correcto', 'Gracias, tus datos fueron enviados')
+		res.redirect('/')
+		return
+    } else {
+    	req.flash('error', errores.array().map(error => error.msg))
+		res.redirect('/')
+		return
+    }
 }
 
 
@@ -164,13 +181,18 @@ exports.contactar = async (req, res, next) => {
 exports.formEditarVacante = async (req, res, next) => {
 	const vacante = await Vacante.findOne({ url: req.params.url })
 	if(!vacante) return next()
-	res.render('editar-vacante', {
-		vacante,
-		nombrePagina: `Editar ${vacante.titulo}`,
-		cerrarSesion: true,
-		nombre: req.user.nombre,
-		imagen: req.user.imagen
-	})
+	if(vacante.autor.toString() === req.user._id.toString()) {
+		res.render('editar-vacante', {
+			vacante,
+			nombrePagina: `Editar ${vacante.titulo}`,
+			cerrarSesion: true,
+			nombre: req.user.nombre,
+			imagen: req.user.imagen
+		})
+	} else {
+		req.flash('error', 'Esta vacante no te pertenece y no la puedes editar')
+		res.redirect('/')
+	}
 }
 
 

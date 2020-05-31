@@ -32,7 +32,7 @@ module.exports = () => {
 
 	// recibir datos del candidato
 	router.post('/vacantes/:url',
-	            vacantesController.subirCv,
+	            // vacantesController.subirCv,
 	            vacantesController.contactar)
 
 	// editar vacante
@@ -115,19 +115,25 @@ module.exports = () => {
 	
 	router.post('/subir-imagen-perfil',
 	            authController.verificarUsuario,
-	            usuariosController.subirImagen,
-	            usuariosController.optimizarImagen,
-	            usuariosController.guardarImagenPerfil)
+	            // usuariosController.subirImagen,
+	            // usuariosController.optimizarImagen,
+	            // usuariosController.guardarImagenPerfil,
+	            usuariosController.guardarImagenPerfilCliente)
 
 	// cambiar o elegir nueva imagen de perfil
 	router.post('/cambiar-imagen-perfil/:publicid',
 	            authController.verificarUsuario,
 	            usuariosController.cambiarImagenPerfil)
 
-	// eliminar una imagen
+	// eliminar una imagen de Mongo y Cloudinary
 	router.post('/eliminar-imagen/:publicid',
 	            authController.verificarUsuario,
 	            usuariosController.eliminarImagen)
+
+	// eliminar una imagen solo de Cloudinary
+	router.post('/eliminar-cloudinary/:publicid',
+	            authController.verificarUsuario,
+	            usuariosController.eliminarCloudinary)
 
 	/* Buscador */
 	// buscador de vacantes

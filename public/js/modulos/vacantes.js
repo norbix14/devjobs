@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	if(vacantesListado) {
 		vacantesListado.addEventListener('click', accionesListado)
 	}
+	
 	// eliminar vacante
 	function accionesListado(e) {
 		e.preventDefault()
-		// reusar Toast
 		const ToastFire = (icon = 'success', title = 'Acción realizada') => {
 			const Toast = Swal.mixin({
 				toast: true,

@@ -41,7 +41,7 @@
 			<h2>Contactar al reclutador</h2>
 			<p>LLenar el formulario, subir currículum y pronto te contactaremos</p>
 			<form action="/vacantes/{{vacante.url}}" method="post" 
-				  class="default-form" enctype="multipart/form-data">
+				  class="default-form">
 				<div class="campo">
 					<label>Nombre</label>
 					<input type="text" name="nombre" placeholder="Tu nombre"
@@ -53,8 +53,9 @@
 						   required>
 				</div>
 				<div class="campo">
-					<label>Currículum Vitae (PDF)</label>
-					<input type="file" name="cv" required>
+					<label>Currículum Vitae (URL)</label>
+					<input type="url" name="cv" placeholder="La dirección donde tu CV esta alojado" 
+						   required>
 				</div>
 				<div class="campo">
 					<input type="submit" value="Enviar datos" class="btn btn-verde">

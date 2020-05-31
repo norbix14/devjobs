@@ -16,7 +16,7 @@ const Tinify = require('../handlers/tinify')
  * cargaran las imagenes, 'filename' con informacion de la propia imagen
  * @param fileFilter verifica si la imagen cumple con los requisitos que le
  * hayamos pasado
- * @param limits limita el tamaño del archivo en 300kb
+ * @param limits limita el tamaño del archivo en 500kb
 */
 const configuracionMulter = {
 	limits: {
@@ -158,12 +158,42 @@ exports.guardarImagenPerfil = async (req, res) => {
 }
 
 
+
 /**
  * @param req contiene datos del usuario y su peticion
  * @param res respuesta que devuelve el servidor
  * 
- * elegir una imagen de la galeria del usuario y 
- * actualizarla como imagen de perfil en MongoDB
+ * guardar los datos de la imagen subida a Cloudinary
+*/
+exports.guardarImagenPerfilCliente = async (req, res) => {
+	const usuario = await Usuarios.findById(req.user._id)
+	if(!usuario) {
+		req.flash('error', 'No se ha encontrado ningún usuario')
+		return res.redirect('/administracion')
+	} else {
+		const owner = usuario._id
+		const { secure_url, public_id, created_at } = req.body
+		const imagen = new Imagen({
+			secure_url,
+			public_id,
+			created_at,
+			owner
+		})
+		usuario.imagen = secure_url
+		await usuario.save()
+		await imagen.save()
+		return res.status(200).send('Imagen de perfil guardada correctamente')
+	}
+}
+
+
+
+/**
+ * @param req contiene datos del usuario y su peticion
+ * @param res respuesta que devuelve el servidor
+ * 
+ * elegir una imagen de la galeria del usuario y actualizarla como imagen
+ * de perfil en MongoDB
 */
 exports.cambiarImagenPerfil = async (req, res) => {
 	const imagen = await Imagen.findOne({
@@ -191,7 +221,23 @@ exports.eliminarImagen = async (req, res) => {
 	const imagen = await Imagen.findOne({
 		public_id: req.params.publicid
 	})
-	const eliminarCloud = await Cloudinary.eliminarCloudinary(imagen._id)
+	const eliminarCloud = await Cloudinary.eliminarImagen(imagen._id)
+	if(eliminarCloud.ok) {
+		res.status(200).send(eliminarCloud.message)
+	} else {
+		res.send(eliminarCloud.message)
+	}
+}
+
+
+/**
+ * @param req contiene datos del usuario y su peticion
+ * @param res respuesta que devuelve el servidor
+ * 
+ * eliminar una imagen de Cloudinary
+*/
+exports.eliminarCloudinary = async (req, res) => {
+	const eliminarCloud = await Cloudinary.eliminarCloudinary(req.params.publicid)
 	if(eliminarCloud.ok) {
 		res.status(200).send(eliminarCloud.message)
 	} else {

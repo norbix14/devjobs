@@ -276,6 +276,7 @@ h3 {
 .default-form input[type="text"],
 .default-form input[type="number"],
 .default-form input[type="file"],
+.default-form input[type="url"],
 .default-form select,
 .default-form textarea {
     flex: 1;
@@ -522,7 +523,7 @@ p.candidatos {
 .d-none {
     display: none;
 }
-/*----- ANIMACION -----*/
+/* Animacion */
 .mask {
     width: 100%;
     height: 100%;
@@ -531,7 +532,6 @@ p.candidatos {
     top: 0px;
     left: 0px;
     z-index: 99999;
-    /*background-image: url(../img/garolfa2.png);*/
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -595,7 +595,7 @@ p.candidatos {
     border-top-color: rgb(255, 0, 0);
 }
 
-/*------- KEYFRAMES -------*/
+/* Keyframes */
 @keyframes rotarClock {
   0% {
     transform: rotate(0deg);
@@ -613,4 +613,6 @@ p.candidatos {
   }
 }
 
-
+/** Progress bar **/
+/*.progress-bar {}*/
+/*.progressbar {}*/
