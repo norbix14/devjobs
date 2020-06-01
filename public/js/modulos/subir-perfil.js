@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    		return borrarImagenCloudinary('eliminar-cloudinary', infoImagen.data.public_id)
 			    	})
 		    	} else {
-		    		ToastFire('error', 'Formato no válido o tamaño de imagen mayor a 500kb')
+		    		ToastFire('warning', 'Formato no válido o tamaño de imagen mayor a 500kb')
 		    		return
 		    	}
 
@@ -76,19 +76,23 @@ document.addEventListener('DOMContentLoaded', function() {
 		    .then(response => {
 		    	if(response.status === 200) {
 		    		infoImagen = response
+
 		    		btnCargarImagen.innerText = 'Cargada'
 		    		btnCargarImagen.setAttribute('disabled', '')
 		    		imgUploadbar.setAttribute('title', 'Imagen cargada')
+
 		    		btnSubirImagen.classList.remove('d-none')
 		    		btnCancelarImagen.classList.remove('d-none')
+		    		
 		    		perfilActual.src = response.data.secure_url
+		    		perfilActual.title = 'Imagen cargada. Presiona SUBIR para guardarla'
+		    		
 		    		ToastFire('success', 'Imagen cargada')
 		    	} else {
-		    		ToastFire('error', 'Error de estado')
+		    		ToastFire('warning', 'Ha ocurrido un error al cargar la imagen')
 		    	}
 		    })
 		    .catch(err => {
-		    	console.log(err)
 		    	ToastFire('error', 'Ha ocurrido un error al cargar la imagen')
 		    })
 		}
@@ -107,15 +111,11 @@ document.addEventListener('DOMContentLoaded', function() {
 					}, 2900)
 				} else {
 					loaderContainer.classList.add('d-none')
-					ToastFire('error', 'No se ha podido subir la imagen')
-					setTimeout(() => {
-						location.href = `${location.origin}/subir-imagen-perfil`
-					}, 2900)
+					ToastFire('warning', 'Ha ocurrido un error al guardar la imagen')
 				}
 			})
 			.catch(err => {
-				console.log(err)
-				ToastFire('error', 'Ha ocurrido un error al subir la imagen')
+				ToastFire('error', 'Ha ocurrido un error al guardar la imagen')
 			})
 		}
 
@@ -127,21 +127,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			.then(response => {
 				if(response.status === 200) {
 					loaderContainer.classList.add('d-none')
-					ToastFire('success', 'Operación cancelada')
+					ToastFire('success', 'Has decidido no guardar esta imagen')
 					setTimeout(() => {
 						location.href = `${location.origin}/subir-imagen-perfil`
 					}, 2900)
 				} else {
 					loaderContainer.classList.add('d-none')
-					ToastFire('error', 'Ha ocurrido un error')
-					setTimeout(() => {
-						location.href = `${location.origin}/subir-imagen-perfil`
-					}, 2900)
+					ToastFire('warning', 'Ha ocurrido un error al cancelar')
 				}
 			})
 			.catch(err => {
-				console.log(err)
-				ToastFire('error', 'Ha ocurrido un error')
+				ToastFire('error', 'Ha ocurrido un error al cancelar')
 			})
 		}
 	}

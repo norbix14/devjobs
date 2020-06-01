@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.addEventListener('dblclick', accionesConLaImagen)
 	}
 
-	// pequeña ventana modal con mensaje para el usuario
 	const ToastFire = (icon = 'success', title = 'Acción realizada') => {
 		const Toast = Swal.mixin({
 			toast: true,
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					inputOptions: inputOptions,
 					inputValidator: (value) => {
 						if (!value) {
-						  return 'Elegí una opción!'
+						  return '¡Elige una opción!'
 						}
 					}
 				})
@@ -107,24 +106,26 @@ document.addEventListener('DOMContentLoaded', function() {
 				})
 			}
 		}
+
 		// usar imagen para actualizar perfil o borrar
 		function usarImagenPara(ruta, publicid, redirigir) {
 			let loaderContainer = document.querySelector('.loader-container')
 			loaderContainer.classList.remove('d-none')
 			let url = `${location.origin}/${ruta}/${publicid}`
 			axios.post(url, { params: { url } })
-			.then(respuesta => {
-				if(respuesta.status === 200) {
+			.then(response => {
+				if(response.status === 200) {
 					loaderContainer.classList.add('d-none')
-					ToastFire('success', respuesta.data)
+					ToastFire('success', response.data)
 					setTimeout(() => {
 						location.href = `${location.origin}/${redirigir}`
-					}, 3000)
+					}, 2900)
 				} else {
-					ToastFire('error', respuesta.data)
+					loaderContainer.classList.add('d-none')
+					ToastFire('warning', response.data)
 				}
 			})
-			.catch(e => {
+			.catch(err => {
 				ToastFire('error', 'Ha ocurrido un error')
 			})
 		}

@@ -6,26 +6,27 @@ document.addEventListener('DOMContentLoaded', function() {
 	if(vacantesListado) {
 		vacantesListado.addEventListener('click', accionesListado)
 	}
+
+	const ToastFire = (icon = 'success', title = 'Acción realizada') => {
+		const Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 3000,
+			timerProgressBar: true,
+			onOpen: (toast) => {
+				toast.addEventListener('mouseenter', Swal.stopTimer)
+				toast.addEventListener('mouseleave', Swal.resumeTimer)
+			}
+		})
+		Toast.fire({ icon, title })
+	}
 	
 	// eliminar vacante
 	function accionesListado(e) {
 		e.preventDefault()
-		const ToastFire = (icon = 'success', title = 'Acción realizada') => {
-			const Toast = Swal.mixin({
-				toast: true,
-				position: 'top-end',
-				showConfirmButton: false,
-				timer: 3000,
-				timerProgressBar: true,
-				onOpen: (toast) => {
-					toast.addEventListener('mouseenter', Swal.stopTimer)
-					toast.addEventListener('mouseleave', Swal.resumeTimer)
-				}
-			})
-			Toast.fire({ icon, title })
-		}
-		// click en boton de eliminar
-		if(e.target.dataset.eliminar) {
+		const vacanteId = e.target.dataset.eliminar
+		if(vacanteId) {
 			Swal.fire({
 				title: '¿Estás seguro?',
 				text: 'Esto no se puede revertir',
@@ -37,18 +38,20 @@ document.addEventListener('DOMContentLoaded', function() {
 				cancelButtonText: 'No, cancelar'
 			})
 			.then(resultado => {
-				if (resultado.value) {
-					const url = `${location.origin}/vacantes/eliminar/${e.target.dataset.eliminar}`
+				if(resultado.value) {
+					const url = `${location.origin}/vacantes/eliminar/${vacanteId}`
 					axios.delete(url, { params: { url } })
-					.then(respuesta => {
-						if(respuesta.status === 200) {
-							ToastFire('success', respuesta.data)
+					.then(response => {
+						if(response.status === 200) {
+							ToastFire('success', response.data)
 							// eliminar del DOM
 							e.target.parentElement.parentElement.parentElement.removeChild(e.target.parentElement.parentElement)
+						} else {
+							ToastFire('warning', 'Ha ocurrido un error al eliminar la vacante')
 						}
 					})
-					.catch(e => {
-						ToastFire('error', 'Ha ocurrido un error')
+					.catch(err => {
+						ToastFire('error', 'Ha ocurrido un error al eliminar la vacante')
 					})
 				}
 			})
