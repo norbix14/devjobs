@@ -109,7 +109,7 @@ module.exports = () => {
 	           usuariosController.editarPerfil)
 
 	// obtener credenciales de Cloudinary
-	router.post('/cloud-cred',
+	router.post('/cloud-cred/:fileinfo',
 				authController.verificarUsuario,
 				usuariosController.obtenerCloudCred)
 	

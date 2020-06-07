@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { v4 as uuid } from 'uuid'
 
 document.addEventListener('DOMContentLoaded', function() {
 	const formSubirPerfil = document.querySelector('#subir-imagen-perfil')
@@ -36,16 +37,25 @@ document.addEventListener('DOMContentLoaded', function() {
 		    const file = e.target.files[0]
 		    if(file) {
 		    	if((file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 512000) {
-					const urlCloudCred = `${location.origin}/cloud-cred`
+		    		const time_stamp = new Date().getTime()
+		    		const public_id = uuid()
+
+		    		const file_info = `public_id=${public_id}&timestamp=${time_stamp}`
+
+					const urlCloudCred = `${location.origin}/cloud-cred/${file_info}`
 					axios.post(urlCloudCred)
 					.then(response => {
 						if(response.status === 200) {
-							let CLOUDINARY_URL = response.data.url
-							let CLOUDINARY_UPLOAD_PRESET = response.data.preset
-							
+							const CLOUDINARY_URL = response.data.url
+							const CLOUDINARY_API_KEY = response.data.key
+							const CLOUDINARY_SIGNATURE = response.data.signature
+
 				        	const formData = new FormData()
+					        formData.append('timestamp', time_stamp)
+					        formData.append('public_id', public_id)
+					        formData.append('api_key', CLOUDINARY_API_KEY)
 					        formData.append('file', file)
-					        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+					        formData.append('signature', CLOUDINARY_SIGNATURE)
 
 					        btnCargarImagen.addEventListener('click', function() {
 						    	imgUploadbar.classList.remove('d-none')

@@ -10,6 +10,7 @@ const path = require('path')
 const Cloudinary = require('../handlers/cloudinary')
 const Tinify = require('../handlers/tinify')
 require('dotenv').config({ path: 'variables.env' })
+const sha1 = require('sha1')
 
 
 /**
@@ -167,8 +168,9 @@ exports.guardarImagenPerfil = async (req, res) => {
 */
 exports.obtenerCloudCred = (req, res) => {
 	let data = {
+		key: process.env.CLOUDINARY_API_KEY,
 		url: process.env.CLOUDINARY_URL_FRONTEND,
-		preset: process.env.CLOUDINARY_UPLOAD_PRESET
+		signature: sha1(req.params.fileinfo + process.env.CLOUDINARY_API_SECRET)
 	}
 	res.status(200).send(data)
 }
