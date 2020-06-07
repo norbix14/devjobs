@@ -9,6 +9,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const Cloudinary = require('../handlers/cloudinary')
 const Tinify = require('../handlers/tinify')
+require('dotenv').config({ path: 'variables.env' })
 
 
 /**
@@ -157,6 +158,20 @@ exports.guardarImagenPerfil = async (req, res) => {
 	return res.redirect('/administracion')
 }
 
+
+/**
+ * @param req contiene datos del usuario y su peticion
+ * @param res respuesta que devuelve el servidor
+ *
+ * pedir credenciales para subir imagenes a Cloudinary
+*/
+exports.obtenerCloudCred = (req, res) => {
+	let data = {
+		url: process.env.CLOUDINARY_URL_FRONTEND,
+		preset: process.env.CLOUDINARY_UPLOAD_PRESET
+	}
+	res.status(200).send(data)
+}
 
 
 /**

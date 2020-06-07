@@ -108,6 +108,11 @@ module.exports = () => {
 	           usuariosController.validarPerfil,
 	           usuariosController.editarPerfil)
 
+	// obtener credenciales de Cloudinary
+	router.post('/cloud-cred',
+				authController.verificarUsuario,
+				usuariosController.obtenerCloudCred)
+	
 	// subir imagen de perfil por separado
 	router.get('/subir-imagen-perfil',
 	           authController.verificarUsuario,

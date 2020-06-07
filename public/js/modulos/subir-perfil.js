@@ -2,10 +2,8 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 
 document.addEventListener('DOMContentLoaded', function() {
-	const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/nbxfab/image/upload'
-	const CLOUDINARY_UPLOAD_PRESET = 'n3spgsbe'
 	const formSubirPerfil = document.querySelector('#subir-imagen-perfil')
-	
+
 	if(formSubirPerfil) {
 		let ToastFire = (icon = 'success', title = 'Acción realizada') => {
 			const Toast = Swal.mixin({
@@ -38,22 +36,36 @@ document.addEventListener('DOMContentLoaded', function() {
 		    const file = e.target.files[0]
 		    if(file) {
 		    	if((file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 512000) {
-		        	const formData = new FormData()
-			        formData.append('file', file)
-			        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+					const urlCloudCred = `${location.origin}/cloud-cred`
+					axios.post(urlCloudCred)
+					.then(response => {
+						if(response.status === 200) {
+							let CLOUDINARY_URL = response.data.url
+							let CLOUDINARY_UPLOAD_PRESET = response.data.preset
+							
+				        	const formData = new FormData()
+					        formData.append('file', file)
+					        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
 
-			        btnCargarImagen.addEventListener('click', function() {
-				    	imgUploadbar.classList.remove('d-none')
-						return cargarEnCloudinary(CLOUDINARY_URL, formData)
+					        btnCargarImagen.addEventListener('click', function() {
+						    	imgUploadbar.classList.remove('d-none')
+								return cargarEnCloudinary(CLOUDINARY_URL, formData)
+							})
+
+							btnSubirImagen.addEventListener('click', function() {
+								return subirImagen('subir-imagen-perfil', infoImagen.data)
+							})
+
+					    	btnCancelarImagen.addEventListener('click', function() {
+					    		return borrarImagenCloudinary('eliminar-cloudinary', infoImagen.data.public_id)
+					    	})
+						} else {
+							ToastFire('warning', 'Ha ocurrido un error')
+						}
 					})
-
-					btnSubirImagen.addEventListener('click', function() {
-						return subirImagen('subir-imagen-perfil', infoImagen.data)
+					.catch(err => {
+						ToastFire('warning', 'Ha ocurrido un error')
 					})
-
-			    	btnCancelarImagen.addEventListener('click', function() {
-			    		return borrarImagenCloudinary('eliminar-cloudinary', infoImagen.data.public_id)
-			    	})
 		    	} else {
 		    		ToastFire('warning', 'Formato no válido o tamaño de imagen mayor a 500kb')
 		    		return
