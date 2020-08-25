@@ -1,25 +1,17 @@
+require('dotenv').config({ path: 'variables.env' })
 const mongoose = require('mongoose')
-const Usuarios = mongoose.model('Usuarios')
-const Imagen = mongoose.model('Imagen')
-const { body, validationResult } = require('express-validator')
 const multer = require('multer')
 const shortid = require('shortid')
 const { v4: uuidv4 } = require('uuid')
+const sha1 = require('sha1')
 const fs = require('fs-extra')
 const path = require('path')
+const { body, validationResult } = require('express-validator')
 const Cloudinary = require('../handlers/cloudinary')
 const Tinify = require('../handlers/tinify')
-require('dotenv').config({ path: 'variables.env' })
-const sha1 = require('sha1')
+const Usuarios = mongoose.model('Usuarios')
+const Imagen = mongoose.model('Imagen')
 
-
-/**
- * @param storage contiene 'destination' con informacion sobre en que carpeta se
- * cargaran las imagenes, 'filename' con informacion de la propia imagen
- * @param fileFilter verifica si la imagen cumple con los requisitos que le
- * hayamos pasado
- * @param limits limita el tamaño del archivo en 500kb
-*/
 const configuracionMulter = {
 	limits: {
 		fileSize: 512000
@@ -48,16 +40,6 @@ const configuracionMulter = {
 }
 const upload = multer(configuracionMulter).single('imagen')
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * @param next continua con el siguiente middleware en caso de
- * error
- *
- * validar tamaño, formato o mostrar algun error de Multer y si todo
- * es correcto, subir en local y continuar con el siguiente middleware
-*/
 exports.subirImagen = (req, res, next) => {
 	upload(req, res, function(error) {
 		if(error) {
@@ -77,16 +59,6 @@ exports.subirImagen = (req, res, next) => {
 	})
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * @param next continua con el siguiente middleware en caso de
- * error
- *
- * optimiza la imagen solo si excede los 500kb y la guarda en 
- * una carpeta diferente
-*/
 exports.optimizarImagen = async (req, res, next) => {
 	if(req.file) {
 		if(req.file.size >= 491520) {
@@ -96,10 +68,6 @@ exports.optimizarImagen = async (req, res, next) => {
 			if(tiny.ok) {
 				return next()
 			} else {
-				// retorno next() tambien en caso de sobrepasar el limite de optimizaciones
-				// console.log('Error con Tinify\n', tiny.message)
-				// req.flash('error', tiny.message)
-				// return res.redirect('/administracion')
 				return next()
 			}
 		} else {
@@ -109,14 +77,6 @@ exports.optimizarImagen = async (req, res, next) => {
 	next()
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * guardar la imagen nueva optimizada en Cloudinary, en caso de haberla subido,
- * y guardar la ruta segura en mongodb
-*/
 exports.guardarImagenPerfil = async (req, res) => {
 	const usuario = await Usuarios.findById(req.user._id)
 	if(req.file) {
@@ -159,13 +119,6 @@ exports.guardarImagenPerfil = async (req, res) => {
 	return res.redirect('/administracion')
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- *
- * pedir credenciales para subir imagenes a Cloudinary
-*/
 exports.obtenerCloudCred = (req, res) => {
 	let data = {
 		key: process.env.CLOUDINARY_API_KEY,
@@ -175,13 +128,6 @@ exports.obtenerCloudCred = (req, res) => {
 	res.status(200).send(data)
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * guardar los datos de la imagen subida a Cloudinary
-*/
 exports.guardarImagenPerfilCliente = async (req, res) => {
 	const usuario = await Usuarios.findById(req.user._id)
 	if(!usuario) {
@@ -203,15 +149,6 @@ exports.guardarImagenPerfilCliente = async (req, res) => {
 	}
 }
 
-
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * elegir una imagen de la galeria del usuario y actualizarla como imagen
- * de perfil en MongoDB
-*/
 exports.cambiarImagenPerfil = async (req, res) => {
 	const imagen = await Imagen.findOne({
 		public_id: req.params.publicid
@@ -226,14 +163,6 @@ exports.cambiarImagenPerfil = async (req, res) => {
 	}
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * eliminar una imagen de la galeria del usuario tanto de MongoDB
- * como de Cloudinary
-*/
 exports.eliminarImagen = async (req, res) => {
 	const imagen = await Imagen.findOne({
 		public_id: req.params.publicid
@@ -246,13 +175,6 @@ exports.eliminarImagen = async (req, res) => {
 	}
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * eliminar una imagen de Cloudinary
-*/
 exports.eliminarCloudinary = async (req, res) => {
 	const eliminarCloud = await Cloudinary.eliminarCloudinary(req.params.publicid)
 	if(eliminarCloud.ok) {
@@ -262,13 +184,6 @@ exports.eliminarCloudinary = async (req, res) => {
 	}
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- *
- * mostrar formulario para subir imagen de perfil
-*/
 exports.formSubirImagen = async (req, res) => {
 	const imagenes = await Imagen.find({
 		owner: req.user._id
@@ -284,13 +199,6 @@ exports.formSubirImagen = async (req, res) => {
 	})
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * renderizar el formulario para crear una cuenta nueva
-*/
 exports.formCrearCuenta = (req, res) => {
 	res.render('crear-cuenta', {
 		nombrePagina: 'Crear cuenta en devJobs',
@@ -298,80 +206,46 @@ exports.formCrearCuenta = (req, res) => {
 	})
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * @param next continua con el siguiente middleware en caso de 
- * error
- * 
- * validar los datos del registro del usuario
-*/
 exports.validarRegistro = async (req, res, next) => {
-	//sanitizar los campos
-    const campos = [
-        body('nombre').not().isEmpty().withMessage('El nombre es obligatorio').escape(),
-        body('email').isEmail().withMessage('El email es obligatorio').normalizeEmail(),
-        body('password').not().isEmpty().withMessage('La contraseña es obligatoria').escape(),
-        body('confirmar').not().isEmpty().withMessage('Debes confirmar la contraseña').escape(),
-        body('confirmar').equals(req.body.password).withMessage('Las contraseñas no coinciden')
-    ]
+	const campos = [
+		body('nombre').not().isEmpty().withMessage('El nombre es obligatorio').escape(),
+		body('email').isEmail().withMessage('El email es obligatorio').normalizeEmail(),
+		body('password').not().isEmpty().withMessage('La contraseña es obligatoria').escape(),
+		body('confirmar').not().isEmpty().withMessage('Debes confirmar la contraseña').escape(),
+		body('confirmar').equals(req.body.password).withMessage('Las contraseñas no coinciden')
+	]
 	await Promise.all(campos.map(campo => campo.run(req)))
 	const errores = validationResult(req)
-	//si hay 'errores' | si 'errores' NO esta vacio
-    if (!errores.isEmpty()) {
-        req.flash('error', errores.array().map(error => error.msg))
-        res.render('crear-cuenta', {
-            nombrePagina: 'Crear cuenta en devJobs',
-            tagline: 'Comienza a publicar tus vacantes',
-            mensajes: req.flash()
-        })
-        return
-    }
-    //si toda la validacion es correcta, continuar al siguiente middleware
-    next()
+	if(!errores.isEmpty()) {
+	  req.flash('error', errores.array().map(error => error.msg))
+	  return res.render('crear-cuenta', {
+			nombrePagina: 'Crear cuenta en devJobs',
+			tagline: 'Comienza a publicar tus vacantes',
+			mensajes: req.flash()
+	  })
+	}
+	next()
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * crear nuevo usuario y guardarlo en la base de datos
-*/
 exports.crearUsuario = async (req, res) => {
-	const usuario = new Usuarios(req.body)
 	try {
+		const usuario = new Usuarios(req.body)
 		await usuario.save()
 		req.flash('correcto', 'Cuenta creada. Ingresa y ve las vacantes')
-		res.redirect('/iniciar-sesion')
+		return res.redirect('/iniciar-sesion')
 	} catch(e) {
 		console.log(e)
 		req.flash('error', 'No se ha podido crear la cuenta')
-		res.redirect('/crear-cuenta')
+		return res.redirect('/crear-cuenta')
 	}
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * mostrar formulario de iniciar sesion
-*/
 exports.formIniciarSesion = (req, res) => {
 	res.render('iniciar-sesion', {
 		nombrePagina: 'Iniciar sesión'
 	})
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * mostrar formulario para editar el perfil
-*/
 exports.formEditarPerfil = (req, res) => {
 	res.render('editar-perfil', {
 		nombrePagina: 'Editar perfil',
@@ -382,13 +256,6 @@ exports.formEditarPerfil = (req, res) => {
 	})
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * guardar los cambios hechos en el perfil
-*/
 exports.editarPerfil = async (req, res) => {
 	const usuario = await Usuarios.findById(req.user._id)
 	usuario.nombre = req.body.nombre
@@ -401,41 +268,27 @@ exports.editarPerfil = async (req, res) => {
 	res.redirect('/administracion')
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * @param next continua con el siguiente middleware en caso de
- * error
- *
- * sanitizar y validar el formulario de editar perfil
-*/
 exports.validarPerfil = async (req, res, next) => {
-	//sanitizar los campos
-    const campos = [
-        body('nombre').not().isEmpty().withMessage('El nombre es obligatorio').escape(),
-        body('email').isEmail().withMessage('El email es obligatorio').normalizeEmail(),
-    ]
-    if(req.body.password) {
-    	campos.push(body('password').escape())
-    }
+	const campos = [
+	  body('nombre').not().isEmpty().withMessage('El nombre es obligatorio').escape(),
+	  body('email').isEmail().withMessage('El email es obligatorio').normalizeEmail(),
+	]
+	if(req.body.password) {
+		campos.push(body('password').escape())
+	}
 	await Promise.all(campos.map(campo => campo.run(req)))
 	const errores = validationResult(req)
-	//si hay 'errores' | si 'errores' NO esta vacio
-    if (!errores.isEmpty()) {
-        req.flash('error', errores.array().map(error => error.msg))
-        res.render('editar-perfil', {
+	if(!errores.isEmpty()) {
+	  req.flash('error', errores.array().map(error => error.msg))
+	  return res.render('editar-perfil', {
 			nombrePagina: 'Editar perfil',
 			usuario: req.user,
 			cerrarSesion: true,
 			nombre: req.user.nombre,
 			imagen: req.user.imagen,
 			mensajes: req.flash()
-		})
-        return
-    }
-    //si toda la validacion es correcta, continuar al siguiente middleware
-    next()
+			}
+		)
+	}
+  next()
 }
-
-

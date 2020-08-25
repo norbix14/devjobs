@@ -3,12 +3,6 @@ mongoose.Promise = global.Promise
 const slug = require('slug')
 const shortid = require('shortid')
 
-
-/**
- * Modelo para las vacantes con los campos:
- * 'titulo', 'empresa', 'ubicacion', 'salario', 'contrato',
- * 'descripcion', 'url', 'skills' y 'candidatos'.
-*/
 const vacantesSchema = new mongoose.Schema({
 	titulo: {
 		type: String,
@@ -58,15 +52,12 @@ const vacantesSchema = new mongoose.Schema({
 	}
 })
 
-// antes de guardar se genera una cadena aleatoria al final de la url
 vacantesSchema.pre('save', function(next) {
 	const url = slug(this.titulo)
 	this.url = `${url}-${shortid.generate()}`
 	next()
 })
 
-// crear un indice para las busquedas (mas rapido)
 vacantesSchema.index({ titulo: 'text' })
 
-// exportar modelo 'Vacante'
 module.exports = mongoose.model('Vacante', vacantesSchema)

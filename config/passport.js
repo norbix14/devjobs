@@ -4,21 +4,25 @@ const mongoose = require('mongoose')
 const Usuarios = mongoose.model('Usuarios')
 
 passport.use(new LocalStrategy(
-{
-	usernameField: 'email',
-	passwordField: 'password'
-},
-async (email, password, done) => {
-	const usuario = await Usuarios.findOne({ email })
-	if(!usuario) {
-		return done(null, false, { message: 'Este email no pertenece a ninguna cuenta' })
+	{
+		usernameField: 'email',
+		passwordField: 'password'
+	},
+	async (email, password, done) => {
+		const usuario = await Usuarios.findOne({ email })
+		if(!usuario) {
+			return done(null, false, {
+				message: 'Este email no pertenece a ninguna cuenta'
+			})
+		}
+		const verificarPass = usuario.compararPassword(password)
+		if(!verificarPass) {
+			return done(null, false, {
+				message: 'Credenciales incorrectas. Revisa tus datos'
+			})
+		}
+		return done(null, usuario)
 	}
-	const verificarPass = usuario.compararPassword(password)
-	if(!verificarPass) {
-		return done(null, false, { message: 'Error en las credenciales. Revisa tus datos' })
-	}
-	return done(null, usuario)
-}
 ))
 
 passport.serializeUser((usuario, done) => done(null, usuario._id))

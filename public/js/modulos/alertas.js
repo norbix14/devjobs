@@ -1,6 +1,3 @@
-import axios from 'axios'
-import Swal from 'sweetalert2'
-
 document.addEventListener('DOMContentLoaded', function() {
 	let alertas = document.querySelector('.alertas')
 	if(alertas) {

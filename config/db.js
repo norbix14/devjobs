@@ -1,20 +1,17 @@
-const mongoose = require('mongoose')
 require('dotenv').config({ path: 'variables.env' })
+const mongoose = require('mongoose')
 
-// Conectar con MongoDB Atlas
 mongoose.connect(process.env.MONGO_DATABASE, {
-	// 'flags' para no mostrar alertas en consola
-	// de opciones deprecadas
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 	useFindAndModify: false,
 	useCreateIndex: true
 })
-// Mostrar algun error con la conexion a la base de datos
+
 mongoose.connection.on('error', error => {
-	console.log('Error al conectar con MongoDB', error)
+	console.log('Error al conectar con MongoDB')
 })
-// importar modelos
+
 require('../models/Usuarios')
 require('../models/Vacantes')
 require('../models/Imagen')

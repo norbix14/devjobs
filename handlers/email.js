@@ -1,35 +1,35 @@
-const emailConfig = require('../config/email')
 const nodemailer = require('nodemailer')
 const hbs = require('nodemailer-express-handlebars')
 const util = require('util')
+const path = require('path')
+const emailConfig = require('../config/email')
 
+const { host, port, user, pass } = emailConfig
 
-let transport = nodemailer.createTransport({
-	host: emailConfig.host,
-	port: emailConfig.port,
+const transport = nodemailer.createTransport({
+	host,
+	port,
 	auth: {
-		user: emailConfig.user,
-		pass: emailConfig.pass
+		user,
+		pass
 	}
 })
 
-// utilizar templates de handlebars
+const viewEmailPath = path.join(__dirname, '/../views/emails')
+
 const hbsOptions = {
 	viewEngine: {
 		extName: '.handlebars',
-		partialsDir: __dirname + '/../views/emails',
-		layoutsDir: __dirname + '/../views/emails',
+		partialsDir: viewEmailPath,
+		layoutsDir: viewEmailPath,
 		defaultLayout: 'reset.handlebars'
 	},
-	viewPath: __dirname + '/../views/emails',
+	viewPath: viewEmailPath,
 	extName: '.handlebars'
 }
+
 transport.use('compile', hbs(hbsOptions))
 
-
-/**
- * @param opciones objeto con datos para el email
-*/
 exports.enviar = async opciones => {
 	const resultado = {}
 	try {
@@ -47,11 +47,7 @@ exports.enviar = async opciones => {
 		resultado.ok = true
 		resultado.message = 'Se te envió un email con los pasos a seguir. Revisalo!'
 	} catch(e) {
-		// console.log('Error al enviar email')
-		// console.log(e)
 		resultado.ok = false
 		resultado.message = 'Ha ocurrido un error al enviar el email'
 	}
 }
-
-

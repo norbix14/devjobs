@@ -1,28 +1,13 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { Toast } from '../helpers/toast'
 
 document.addEventListener('DOMContentLoaded', function() {
 	let vacantesListado = document.querySelector('.panel-administracion')
 	if(vacantesListado) {
 		vacantesListado.addEventListener('click', accionesListado)
 	}
-
-	const ToastFire = (icon = 'success', title = 'Acción realizada') => {
-		const Toast = Swal.mixin({
-			toast: true,
-			position: 'top-end',
-			showConfirmButton: false,
-			timer: 3000,
-			timerProgressBar: true,
-			onOpen: (toast) => {
-				toast.addEventListener('mouseenter', Swal.stopTimer)
-				toast.addEventListener('mouseleave', Swal.resumeTimer)
-			}
-		})
-		Toast.fire({ icon, title })
-	}
 	
-	// eliminar vacante
 	function accionesListado(e) {
 		e.preventDefault()
 		const vacanteId = e.target.dataset.eliminar
@@ -43,15 +28,12 @@ document.addEventListener('DOMContentLoaded', function() {
 					axios.delete(url, { params: { url } })
 					.then(response => {
 						if(response.status === 200) {
-							ToastFire('success', response.data)
-							// eliminar del DOM
+							Toast('success', response.data)
 							e.target.parentElement.parentElement.parentElement.removeChild(e.target.parentElement.parentElement)
-						} else {
-							ToastFire('warning', 'Ha ocurrido un error al eliminar la vacante')
 						}
 					})
 					.catch(err => {
-						ToastFire('error', 'Ha ocurrido un error al eliminar la vacante')
+						Toast('error', 'Ha ocurrido un error al eliminar la vacante')
 					})
 				}
 			})

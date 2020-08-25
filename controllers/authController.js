@@ -1,14 +1,10 @@
 const passport = require('passport')
 const mongoose = require('mongoose')
+const crypto = require('crypto')
 const Vacante = mongoose.model('Vacante')
 const Usuarios = mongoose.model('Usuarios')
-const crypto = require('crypto')
 const enviarEmail = require('../handlers/email')
 
-
-/**
- * autenticar usuario
-*/
 exports.autenticarUsuario = passport.authenticate('local', {
 	successRedirect: '/administracion',
 	failureRedirect: '/iniciar-sesion',
@@ -16,28 +12,11 @@ exports.autenticarUsuario = passport.authenticate('local', {
 	badRequestMessage: 'Campos obligatorios'
 })
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * @param next continua con el siguiente middleware en caso de 
- * error
- *
- * verificar que el usuario se encuentre autenticado
-*/
 exports.verificarUsuario = (req, res, next) => {
 	if(req.isAuthenticated()) return next()
 	res.redirect('/iniciar-sesion')
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- *
- * mostrar el panel de administracion con todas las vacantes 
- * publicadas
-*/
 exports.mostrarPanel = async (req, res) => {
 	const vacantes = await Vacante.find({ autor: req.user._id })
 	res.render('administracion', {
@@ -50,26 +29,12 @@ exports.mostrarPanel = async (req, res) => {
 	})
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- *
- * cerrar la sesion
-*/
 exports.cerrarSesion = (req, res) => {
 	req.logout()
 	req.flash('correcto', 'Sesión cerrada correctamente. Vuelve cuando quieras!')
 	return res.redirect('/iniciar-sesion')
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * mostrar formulario para reestablecer la contraseña
-*/
 exports.formReestablecerPassword = (req, res) => {
 	res.render('reestablecer-password', {
 		nombrePagina: 'Reestablecer contraseña',
@@ -77,13 +42,6 @@ exports.formReestablecerPassword = (req, res) => {
 	})
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * generar token para reestablecer la contraseña
-*/
 exports.enviarToken = async (req, res) => {
 	const usuario = await Usuarios.findOne({ email: req.body.email })
 	if(!usuario) {
@@ -109,13 +67,6 @@ exports.enviarToken = async (req, res) => {
 	}
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * validar si el token es valido y el usuario existe
-*/
 exports.reestablecerPassword = async (req, res) => {
 	const usuario = await Usuarios.findOne({
 		token: req.params.token,
@@ -133,13 +84,6 @@ exports.reestablecerPassword = async (req, res) => {
 	})
 }
 
-
-/**
- * @param req contiene datos del usuario y su peticion
- * @param res respuesta que devuelve el servidor
- * 
- * guardar la nueva contraseña
-*/
 exports.guardarPassword = async (req, res) => {
 	const usuario = await Usuarios.findOne({
 		token: req.params.token,
@@ -147,10 +91,9 @@ exports.guardarPassword = async (req, res) => {
 			$gt: Date.now()
 		}
 	})
-	// si no existe el usuario o el token ya expiro
 	if(!usuario) {
 		req.flash('error', 'Esta acción ya no es válida')
-		res.redirect('/reestablecer-password')
+		return res.redirect('/reestablecer-password')
 	}
 	usuario.password = req.body.password
 	usuario.token = undefined
@@ -159,5 +102,3 @@ exports.guardarPassword = async (req, res) => {
 	req.flash('correcto', 'La contraseña se actualizó correctamente')
 	res.redirect('/iniciar-sesion')
 }
-
-

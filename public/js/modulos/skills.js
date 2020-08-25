@@ -1,6 +1,3 @@
-import axios from 'axios'
-import Swal from 'sweetalert2'
-
 document.addEventListener('DOMContentLoaded', function() {
 	let listaSkills = document.querySelector('.lista-conocimientos')
 	if(listaSkills) {
@@ -19,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			let skillsArray = [...skills]
 			inputHiddenSkills.value = skillsArray
 		})
-		// cuando estemos en la seccion de editar
 		let seleccionadas = Array.from(document.querySelectorAll('.lista-conocimientos .activo'))
 		seleccionadas.forEach(seleccionada => {
 			skills.add(seleccionada.textContent)

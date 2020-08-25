@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { Toast } from '../helpers/toast'
 
 document.addEventListener('DOMContentLoaded', function() {
 	let swiperContainer = document.querySelector('.swiper-container')
@@ -9,42 +10,25 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.addEventListener('dblclick', accionesConLaImagen)
 	}
 
-	const ToastFire = (icon = 'success', title = 'Acción realizada') => {
-		const Toast = Swal.mixin({
-			toast: true,
-			position: 'top-end',
-			showConfirmButton: false,
-			timer: 3000,
-			timerProgressBar: true,
-			onOpen: (toast) => {
-				toast.addEventListener('mouseenter', Swal.stopTimer)
-				toast.addEventListener('mouseleave', Swal.resumeTimer)
-			}
-		})
-		Toast.fire({ icon, title })
-	}
-
-	// mostrar carrusel de imagenes de perfil con swiper
 	function showSwiper() {
 		let swiper = new Swiper('.swiper-container', {
 			effect: 'coverflow',
-	        grabCursor: true,
-	        centeredSlides: true,
-	        slidesPerView: 'auto',
-	        coverflowEffect: {
-	        	rotate: 50,
-	            stretch: 0,
-	            depth: 100,
-	            modifier: 1,
-	            slideShadows: true
-	        },
-	        pagination: {
-	            el: '.swiper-pagination'
-	        }
-	    })
+      grabCursor: true,
+      centeredSlides: true,
+      slidesPerView: 'auto',
+      coverflowEffect: {
+      	rotate: 50,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+        slideShadows: true
+      },
+      pagination: {
+        el: '.swiper-pagination'
+      }
+	  })
 	}
 
-	// resaltar la imagen de perfil actual y que coincide con la de la galeria
 	function focusProfile() {
 		let perfil = document.querySelector('.admin-perfil')
 		let imagenes = Array.from(document.querySelectorAll('.swiper-slide'))
@@ -55,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	}
 
-	// elegir lo que se quiere hacer con la imagen
 	function accionesConLaImagen(e) {
 		if(e.target.tagName === 'IMG') {
 			let public_id = e.target.dataset.publicId
@@ -70,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					input: 'radio',
 					inputOptions: inputOptions,
 					inputValidator: (value) => {
-						if (!value) {
+						if(!value) {
 						  return '¡Elige una opción!'
 						}
 					}
@@ -106,8 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
 				})
 			}
 		}
-
-		// usar imagen para actualizar perfil o borrar
 		function usarImagenPara(ruta, publicid, redirigir) {
 			let loaderContainer = document.querySelector('.loader-container')
 			loaderContainer.classList.remove('d-none')
@@ -116,17 +97,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			.then(response => {
 				if(response.status === 200) {
 					loaderContainer.classList.add('d-none')
-					ToastFire('success', response.data)
+					Toast('success', response.data)
 					setTimeout(() => {
 						location.href = `${location.origin}/${redirigir}`
 					}, 2900)
-				} else {
-					loaderContainer.classList.add('d-none')
-					ToastFire('warning', response.data)
 				}
 			})
 			.catch(err => {
-				ToastFire('error', 'Ha ocurrido un error')
+				loaderContainer.classList.add('d-none')
+				Toast('error', 'Ha ocurrido un error')
 			})
 		}
 	}
