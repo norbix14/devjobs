@@ -1,31 +1,37 @@
-## Proyecto devJobs
+## Proyecto [devJobs](https://infinite-peak-70937.herokuapp.com)
 
-Enlace al proyecto [devJobs](https://infinite-peak-70937.herokuapp.com)
+Publicación y búsqueda de empleo para desarrolladores
 
-Proyecto de búsqueda y publicación de empleo para desarrolladores <br />
+### La rama `master` tiene el código tal cual al curso
+
+### La rama `dev` tiene el código con modificaciones, mejoras y otras integraciones
+
+### El proyecto fue desplegado usando el código de la rama `dev`
 
 ## Pasos
 
-### `git clone <repo>`
-
 Clonar este repositorio
 
-### `npm i`
+### `git clone <repository> --branch <master/dev> <directory>`
 
 Instalar las dependencias necesarias
 
-### `npm run desarrollo`
+### `npm i`
 
 Ejecuta la [App](http://localhost:5000) en modo de desarrollo
+
+### `npm run desarrollo`
 
 ## Este proyecto utiliza los siguientes elementos
 
 ### Requeridos
 
-[Cloudinary](https://cloudinary.com/) <br />
-[MongoDBAtlas](https://cloud.mongodb.com/user#/atlas/login) <br />
+[Cloudinary](https://cloudinary.com/)
+
+[MongoDBAtlas](https://cloud.mongodb.com/user#/atlas/login)
 
 ### Opcionales (optimización de imagenes, envío de emails)
 
-[MailTrap](https://mailtrap.io/) <br />
-[Tinify](https://tinypng.com/) <br />
+[MailTrap](https://mailtrap.io/)
+
+[Tinify](https://tinypng.com/)

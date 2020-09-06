@@ -1,8 +1,7 @@
 /node_modules
+/test
+/public/uploads/
 MongodbAtlasInfo.txt
 variables.env
 .DS_Store
-/test
-/public/uploads/
-/public/dist/
 TODO.txt
