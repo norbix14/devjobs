@@ -1,6 +1,4 @@
 /node_modules
-/test
-/public/uploads/
 variables.env
 .DS_Store
-TODO.txt
+TODO.md
