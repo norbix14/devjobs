@@ -4,10 +4,12 @@
   "description": "Portal de empleos DevJobs",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./index.js",
     "desarrollo": "concurrently \"npm run dev\" \"npm run watch\"",
-    "start": "node ./index.js",
-    "watch": "webpack --w --mode development"
+    "produccion": "concurrently \"npm run dev\" \"npm run prod\"",
+    "watch": "webpack --watch --mode development",
+    "prod": "webpack --mode production",
+    "dev": "nodemon ./index.js",
+    "start": "node ./index.js"
   },
   "keywords": [
     "devjobs",
@@ -16,16 +18,16 @@
   "author": "Juan Pablo de la Torre Valdez (Udemy)",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/preset-env": "^7.11.5",
-    "babel-loader": "^8.1.0",
-    "nodemon": "^2.0.4",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "@babel/core": "^7.12.9",
+    "@babel/preset-env": "^7.12.7",
+    "babel-loader": "^8.2.2",
+    "nodemon": "^2.0.6",
+    "webpack": "^5.8.0",
+    "webpack-cli": "^4.2.0"
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.3",
-    "axios": "^0.20.0",
+    "axios": "^0.21.0",
     "bcrypt": "^5.0.0",
     "cloudinary": "^1.23.0",
     "concurrently": "^5.3.0",
@@ -34,23 +36,23 @@
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "express-handlebars": "^5.1.0",
+    "express-handlebars": "^5.2.0",
     "express-session": "^1.17.1",
-    "express-validator": "^6.6.1",
+    "express-validator": "^6.7.0",
     "fs-extra": "^9.0.1",
     "handlebars": "^4.7.6",
     "http-errors": "^1.8.0",
-    "mongoose": "^5.10.5",
+    "mongoose": "^5.10.16",
     "multer": "^1.4.2",
-    "nodemailer": "^6.4.11",
+    "nodemailer": "^6.4.16",
     "nodemailer-express-handlebars": "^4.0.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "sha1": "^1.1.1",
-    "shortid": "^2.2.15",
-    "slug": "^3.3.4",
-    "sweetalert2": "^10.0.2",
+    "shortid": "^2.2.16",
+    "slug": "^4.0.2",
+    "sweetalert2": "^10.10.4",
     "tinify": "^1.6.0-beta.2",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.1"
   }
 }

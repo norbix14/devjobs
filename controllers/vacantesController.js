@@ -8,35 +8,6 @@ const { body, validationResult } = require('express-validator')
 const Vacante = mongoose.model('Vacante')
 const Cv = mongoose.model('Cv')
 
-exports.formularioNuevaVacante = (req, res) => {
-	res.render('nueva-vacante', {
-		nombrePagina: 'Nueva vacante',
-		tagline: 'Completa el formulario y publica tu vacante',
-		cerrarSesion: true,
-		nombre: req.user.nombre,
-		imagen: req.user.imagen
-	})
-}
-
-exports.agregarVacante = async (req, res) => {
-	const vacante = new Vacante(req.body)
-	vacante.autor = req.user._id
-	vacante.skills = req.body.skills.split(',')
-	const nuevaVacante = await vacante.save()
-	req.flash('correcto', 'Vacante creada correctamente. Mira como quedó!')
-	res.redirect(`/vacantes/${nuevaVacante.url}`)
-}
-
-exports.mostrarVacante = async (req, res, next) => {
-	const vacante = await Vacante.findOne({ url: req.params.url }).populate('autor')
-	if(!vacante) return next()
-	res.render('vacante', {
-		vacante,
-		nombrePagina: vacante.titulo,
-		barra: true
-	})
-}
-
 const configuracionMulter = {
 	limits: {
 		fileSize: 512000
@@ -65,6 +36,35 @@ const configuracionMulter = {
 }
 
 const upload = multer(configuracionMulter).single('cv')
+
+exports.formularioNuevaVacante = (req, res) => {
+	res.render('nueva-vacante', {
+		nombrePagina: 'Nueva vacante',
+		tagline: 'Completa el formulario y publica tu vacante',
+		cerrarSesion: true,
+		nombre: req.user.nombre,
+		imagen: req.user.imagen
+	})
+}
+
+exports.agregarVacante = async (req, res) => {
+	const vacante = new Vacante(req.body)
+	vacante.autor = req.user._id
+	vacante.skills = req.body.skills.split(',')
+	const nuevaVacante = await vacante.save()
+	req.flash('correcto', 'Vacante creada correctamente. Mira como quedó!')
+	res.redirect(`/vacantes/${nuevaVacante.url}`)
+}
+
+exports.mostrarVacante = async (req, res, next) => {
+	const vacante = await Vacante.findOne({ url: req.params.url }).populate('autor')
+	if(!vacante) return next()
+	res.render('vacante', {
+		vacante,
+		nombrePagina: vacante.titulo,
+		barra: true
+	})
+}
 
 exports.subirCv = (req, res, next) => {
 	upload(req, res, function(error) {

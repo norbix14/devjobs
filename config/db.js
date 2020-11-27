@@ -1,7 +1,7 @@
 require('dotenv').config({ path: 'variables.env' })
 const mongoose = require('mongoose')
 
-mongoose.connect(process.env.MONGO_DATABASE, {
+mongoose.connect(process.env.MONGODB_DATABASE, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 	useFindAndModify: false,

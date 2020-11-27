@@ -7,7 +7,7 @@ export const Toast = (icon = 'success', title = 'Acción realizada') => {
 		showConfirmButton: false,
 		timer: 3000,
 		timerProgressBar: true,
-		onOpen: (toast) => {
+		didOpen: (toast) => {
 			toast.addEventListener('mouseenter', Swal.stopTimer)
 			toast.addEventListener('mouseleave', Swal.resumeTimer)
 		}

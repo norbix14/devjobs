@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const homeController = require('../controllers/homeController')
-const vacantesController = require('../controllers/vacantesController')
-const usuariosController = require('../controllers/usuariosController')
 const authController = require('../controllers/authController')
+const homeController = require('../controllers/homeController')
+const usuariosController = require('../controllers/usuariosController')
+const vacantesController = require('../controllers/vacantesController')
 
 module.exports = () => {
 	/* Inicio */

@@ -36,8 +36,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(cookieParser())
 
 app.use(session({
-	secret: process.env.SECRET,
-	key: process.env.KEY,
+	secret: process.env.SESSION_SECRET,
+	key: process.env.SESSION_KEY,
 	resave: false,
 	saveUninitialized: false,
 	store: new MongoStore({
