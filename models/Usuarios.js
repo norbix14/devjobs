@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 
 const usuariosSchema = new mongoose.Schema({
 	email: {
@@ -23,10 +23,11 @@ const usuariosSchema = new mongoose.Schema({
 	imagen: String
 })
 
-usuariosSchema.pre('save', async function(next) {
+usuariosSchema.pre('save', function(next) {
 	if(!this.isModified('password')) return next()
-	const hash = await bcrypt.hash(this.password, 12)
-	this.password = hash
+	const salt = bcrypt.genSaltSync()
+	const hashedPass = bcrypt.hashSync(this.password, salt)
+	this.password = hashedPass
 	next()
 })
 

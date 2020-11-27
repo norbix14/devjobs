@@ -1,41 +1,14 @@
 const mongoose = require('mongoose')
-const multer = require('multer')
-const shortid = require('shortid')
-const { v4: uuidv4 } = require('uuid')
-const fs = require('fs-extra')
-const path = require('path')
 const { body, validationResult } = require('express-validator')
 const Vacante = mongoose.model('Vacante')
 const Cv = mongoose.model('Cv')
 
-const configuracionMulter = {
-	limits: {
-		fileSize: 512000
-	},
-	storage: fileStorage = multer.diskStorage({
-		destination: (req, file, callback) => {
-			callback(null, path.join(__dirname, '../public/uploads/cv'))
-		},
-		filename: (req, file, callback) => {
-			const fileParts = file.mimetype.split('/')
-			const fileType = fileParts[0]
-			const fileExt = fileParts[1]
-			const fileIdentif = `${fileType}_${fileExt}`
-			const fileUniqueName = `${shortid.generate()}-${uuidv4()}`
-			const archivoFinal = `${fileIdentif}_${fileUniqueName}.${fileExt}`
-			callback(null, archivoFinal)
-		}
-	}),
-	fileFilter: (req, file, callback) => {
-		if(file.mimetype === 'application/pdf') {
-			callback(null, true)
-		} else {
-			callback(new Error('Formato de archivo no válido'), false)
-		}
+const verificarAutor = (vacante = {}, usuario = {}) => {
+	if(!vacante.autor.equals(usuario._id)) {
+		return false
 	}
+	return true
 }
-
-const upload = multer(configuracionMulter).single('cv')
 
 exports.formularioNuevaVacante = (req, res) => {
 	res.render('nueva-vacante', {
@@ -63,25 +36,6 @@ exports.mostrarVacante = async (req, res, next) => {
 		vacante,
 		nombrePagina: vacante.titulo,
 		barra: true
-	})
-}
-
-exports.subirCv = (req, res, next) => {
-	upload(req, res, function(error) {
-		if(error) {
-			if(error instanceof multer.MulterError) {
-				if(error.code === 'LIMIT_FILE_SIZE') {
-					req.flash('error', 'El archivo es muy grande. Solo hasta 500kb')
-				} else {
-					req.flash('error', error.message)
-				}
-			} else {
-				req.flash('error', error.message)
-			}
-			return res.redirect('back')
-		} else {
-			return next()
-		}
 	})
 }
 
@@ -181,13 +135,6 @@ exports.eliminarVacante = async (req, res) => {
 	} else {
 		res.status(403).send('Error. Acción prohibida')
 	}
-}
-
-const verificarAutor = (vacante = {}, usuario = {}) => {
-	if(!vacante.autor.equals(usuario._id)) {
-		return false
-	}
-	return true
 }
 
 exports.mostrarCandidatos = async (req, res, next) => {

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				cancelButtonText: 'No, cancelar'
 			})
 			.then(resultado => {
-				if(resultado.value) {
+				if(resultado.isConfirmed) {
 					const url = `${location.origin}/vacantes/eliminar/${vacanteId}`
 					axios.delete(url, { params: { url } })
 					.then(response => {

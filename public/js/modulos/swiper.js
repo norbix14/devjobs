@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					}
 				})
 				.then(resultado => {
-					if(resultado.value) {
+					if(resultado.isConfirmed) {
 						switch (resultado.value) {
 							case 'elegir':
 								usarImagenPara('cambiar-imagen-perfil', public_id, 'administracion')
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
 									cancelButtonText: 'No, cancelar'
 								})
 								.then(res => {
-									if(res.value) {
+									if(res.isConfirmed) {
 										usarImagenPara('eliminar-imagen', public_id, 'administracion')
 									}
 								})

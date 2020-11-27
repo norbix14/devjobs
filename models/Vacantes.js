@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 const slug = require('slug')
-const shortid = require('shortid')
+const { nanoid } = require('nanoid')
 
 const vacantesSchema = new mongoose.Schema({
 	titulo: {
@@ -54,7 +54,7 @@ const vacantesSchema = new mongoose.Schema({
 
 vacantesSchema.pre('save', function(next) {
 	const url = slug(this.titulo)
-	this.url = `${url}-${shortid.generate()}`
+	this.url = `${url}-${nanoid()}`
 	next()
 })
 

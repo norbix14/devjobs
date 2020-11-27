@@ -32,7 +32,6 @@ module.exports = () => {
 
 	// recibir datos del candidato
 	router.post('/vacantes/:url',
-		// vacantesController.subirCv,
 		vacantesController.contactar
 	)
 
@@ -79,26 +78,6 @@ module.exports = () => {
 		authController.cerrarSesion
 	)
 
-	/*
-	// reestablecer contraseña
-	router.get('/reestablecer-password',
-		authController.formReestablecerPassword
-	)
-
-	router.post('/reestablecer-password',
-		authController.enviarToken
-	)
-
-	// almacenar contraseña nueva en la base de datos
-	router.get('/reestablecer-password/:token',
-		authController.reestablecerPassword
-	)
-
-	router.post('/reestablecer-password/:token',
-		authController.guardarPassword
-	)
-	*/
-
 	/* Candidatos */
 	// mostrar candidatos por vacante
 	router.get('/candidatos/:id',
@@ -139,9 +118,6 @@ module.exports = () => {
 	
 	router.post('/subir-imagen-perfil',
 		authController.verificarUsuario,
-		// usuariosController.subirImagen,
-		// usuariosController.optimizarImagen,
-		// usuariosController.guardarImagenPerfil,
 		usuariosController.guardarImagenPerfilCliente
 	)
 

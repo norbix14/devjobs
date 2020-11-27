@@ -20,21 +20,35 @@ Búsqueda y publicación de empleos IT
 
 ![Detalles del reclutador](/snapshots/vacante-reclutador.png "Detalles del reclutador")
 
-## Pasos
+## Pasos previos
 
 Clonar este repositorio
 
-**`git clone <repository>`**
+		git clone <repository>
 
 Instalar las dependencias necesarias
 
-**`npm i`**
+		npm i
 
-Ejecuta la **[App](http://localhost:5000)** (elegir puerto a gusto)
+Ejecutar la **[App](http://localhost:5000)** (elegir puerto a gusto)
 
-**`npm run desarrollo`** para crear el `bundle` de desarrollo. `webpack --watch --mode development`
+**En etapa de desarrollo**
 
-**`npm run produccion`** para crear el `bundle` de produccion. `webpack --mode production`
+		npm run desarrollo
+
+Ejecuta `nodemon ./index.js` y `webpack --watch --mode development` mediante `concurrently`
+
+**En etapa de produccion**
+
+		npm run produccion
+
+Ejecuta `nodemon ./index.js` y `webpack --mode production` mediante `concurrently`
+
+**En etapa de despliegue o para probar funcionamiento antes del despliegue**
+
+		npm start
+
+Ejecuta `node ./index.js`
 
 ## Este proyecto utiliza los siguientes elementos
 
@@ -43,9 +57,3 @@ Ejecuta la **[App](http://localhost:5000)** (elegir puerto a gusto)
 **[Cloudinary](https://cloudinary.com/ "Para subir las imagenes de la página")**
 
 **[MongoDBAtlas](https://cloud.mongodb.com/user#/atlas/login "Guardar datos de las vacantes y los usuarios")**
-
-### Opcionales (optimización de imagenes, envío de emails)
-
-**[MailTrap](https://mailtrap.io/ "Envío de email para la confirmación de la cuenta")**
-
-**[Tinify](https://tinypng.com/ "Optimización de imagenes")**
