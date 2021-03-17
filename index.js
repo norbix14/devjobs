@@ -1,27 +1,27 @@
-require('dotenv').config({ path: 'variables.env' })
+require('dotenv').config()
 require('./config/db')
-const mongoose = require('mongoose')
 const express = require('express')
 const path = require('path')
 const handlebars = require('handlebars')
 const exphbs = require('express-handlebars')
-const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
+const {
+	allowInsecurePrototypeAccess
+} = require('@handlebars/allow-prototype-access')
 const router = require('./routes/index')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
-const MongoStore = require('connect-mongo')(session)
-const bodyParser = require('body-parser')
+const MongoStore = require('connect-mongo')
 const flash = require('connect-flash')
 const createError = require('http-errors')
 const passport = require('./config/passport')
 
-const port = process.env.PORT
+const port = Number(process.env.PORT)
 const host = '0.0.0.0'
 
 const app = express()
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.engine('handlebars', exphbs({
 	handlebars: allowInsecurePrototypeAccess(handlebars),
@@ -40,8 +40,8 @@ app.use(session({
 	key: process.env.SESSION_KEY,
 	resave: false,
 	saveUninitialized: false,
-	store: new MongoStore({
-		mongooseConnection: mongoose.connection
+	store: MongoStore.create({
+		mongoUrl: process.env.MONGODB_DATABASE
 	})
 }))
 
@@ -62,11 +62,15 @@ app.use((req, res, next) => {
 })
 
 app.use((error, req, res, next) => {
-	res.locals.mensaje = error.message
 	const status = error.status || 500
 	res.locals.status = status
+	res.locals.environment = req.app.get('env')
+	res.locals.error = error
 	res.status(status)
-	res.render('error')
+	res.render('error', {
+		nombrePagina: '404 - Not found',
+		mensaje: 'Página no encontrada'
+	})
 })
 
 app.listen(port, host, () => console.log(`Servidor en puerto ${port}`))

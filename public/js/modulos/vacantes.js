@@ -1,41 +1,46 @@
-import axios from 'axios'
-import Swal from 'sweetalert2'
-import { Toast } from '../helpers/toast'
+import { AxiosRequest } from '../helpers/AxiosRequest'
+import {
+	SwalDelete,
+	Toast
+} from '../helpers/SweetAlert'
+
+/**
+ * Modulo para manejar las acciones con las vacantes
+ * 
+ * @module modulos/vacantes
+*/
 
 document.addEventListener('DOMContentLoaded', function() {
-	let vacantesListado = document.querySelector('.panel-administracion')
+	const vacantesListado = document.querySelector('.panel-administracion')
 	if(vacantesListado) {
 		vacantesListado.addEventListener('click', accionesListado)
 	}
-	
+
+	/**
+	 * Funcion para realizar acciones con las vacantes
+	 * 
+	 * @param {object} e - Mouse event
+	*/
 	function accionesListado(e) {
 		e.preventDefault()
-		const vacanteId = e.target.dataset.eliminar
+		const { eliminar: vacanteId = null } = e.target.dataset
 		if(vacanteId) {
-			Swal.fire({
-				title: '¿Estás seguro?',
-				text: 'Esto no se puede revertir',
-				icon: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Si, borrar',
-				cancelButtonText: 'No, cancelar'
-			})
-			.then(resultado => {
-				if(resultado.isConfirmed) {
-					const url = `${location.origin}/vacantes/eliminar/${vacanteId}`
-					axios.delete(url, { params: { url } })
-					.then(response => {
-						if(response.status === 200) {
-							Toast('success', response.data)
-							e.target.parentElement.parentElement.parentElement.removeChild(e.target.parentElement.parentElement)
-						}
-					})
-					.catch(err => {
-						Toast('error', 'Ha ocurrido un error al eliminar la vacante')
-					})
+			SwalDelete(() => {
+				const url = `${location.origin}/vacantes/eliminar/${vacanteId}`
+				const options = {
+					url,
+					method: 'DELETE',
+					params: { url }
 				}
+				AxiosRequest(options, (err, res) => {
+					if (err) {
+						return Toast('error', res.message)
+					}
+					if (res.status === 200) {
+						e.target.parentElement.parentElement.parentElement.removeChild(e.target.parentElement.parentElement)
+						return Toast('success', res.data)
+					}
+				})
 			})
 		} else if (e.target.tagName === 'A') {
 			window.location.href = e.target.href

@@ -1,0 +1,40 @@
+{
+  "opts": {
+    "destination": "./docs/",
+    "encoding": "utf8",
+    "recurse": true,
+    "template": "node_modules/docdash"
+  },
+  "plugins": [],
+  "recurseDepth": 10,
+  "source": {
+    "exclude": [
+      "node_modules",
+      "public/dist",
+      "docs"
+    ],
+    "include": [
+      "config",
+      "controllers",
+      "handlers",
+      "helpers",
+      "models",
+      "public",
+      "routes"
+    ],
+    "excludePattern": "(^|\\/|\\\\)_",
+    "includePattern": ".+\\.js(doc|x)?$"
+  },
+  "sourceType": "module",
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": [
+      "jsdoc",
+      "closure"
+    ]
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  }
+}

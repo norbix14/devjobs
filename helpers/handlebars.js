@@ -1,3 +1,9 @@
+/**
+ * Modulo que exporta un objeto con funciones de ayuda
+ * 
+ * @module helpers/handlebars
+*/
+
 module.exports = {
 	seleccionarSkills: (seleccionadas = [], opciones) => {
 		const skills = ['HTML5', 'CSS3', 'CSSGrid', 'Flexbox', 

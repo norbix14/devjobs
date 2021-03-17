@@ -1,6 +1,15 @@
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
-const bcrypt = require('bcryptjs')
+const {
+	encryptPassword,
+	comparePassword
+} = require('../helpers/passwordHandler')
+
+/**
+ * Modulo que contiene el modelo del usuario
+ *
+ * @module models/Usuarios
+*/
 
 const usuariosSchema = new mongoose.Schema({
 	email: {
@@ -25,8 +34,7 @@ const usuariosSchema = new mongoose.Schema({
 
 usuariosSchema.pre('save', function(next) {
 	if(!this.isModified('password')) return next()
-	const salt = bcrypt.genSaltSync()
-	const hashedPass = bcrypt.hashSync(this.password, salt)
+	const hashedPass = encryptPassword(this.password)
 	this.password = hashedPass
 	next()
 })
@@ -41,7 +49,7 @@ usuariosSchema.post('save', function(error, doc, next) {
 
 usuariosSchema.methods = {
 	compararPassword: function(password) {
-		return bcrypt.compareSync(password, this.password)
+		return comparePassword(password, this.password)
 	}
 }
 

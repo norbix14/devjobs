@@ -1,7 +1,13 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
-const mongoose = require('mongoose')
-const Usuarios = mongoose.model('Usuarios')
+const { model } = require('mongoose')
+const Usuarios = model('Usuarios')
+
+/**
+ * Modulo que se encarga de la autenticacion del usuario
+ * 
+ * @module config/passport
+*/
 
 passport.use(new LocalStrategy(
 	{

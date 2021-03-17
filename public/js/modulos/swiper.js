@@ -1,17 +1,29 @@
-import axios from 'axios'
-import Swal from 'sweetalert2'
-import { Toast } from '../helpers/toast'
+import { AxiosRequest } from '../helpers/AxiosRequest'
+import {
+	SwalChoose,
+	SwalDelete,
+	Toast
+} from '../helpers/SweetAlert'
+
+/**
+ * Modulo para manejar la galeria de imagenes del perfil
+ * 
+ * @module modulos/swiper
+*/
 
 document.addEventListener('DOMContentLoaded', function() {
-	let swiperContainer = document.querySelector('.swiper-container')
+	const swiperContainer = document.querySelector('.swiper-container')
 	if(swiperContainer) {
 		showSwiper()
 		focusProfile()
 		document.addEventListener('dblclick', accionesConLaImagen)
 	}
 
+	/**
+	 * Funcion para mostrar una galeria con Swiper
+	*/
 	function showSwiper() {
-		let swiper = new Swiper('.swiper-container', {
+		const swiper = new Swiper('.swiper-container', {
 			effect: 'coverflow',
       grabCursor: true,
       centeredSlides: true,
@@ -29,9 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	  })
 	}
 
+	/**
+	 * Funcion para enfocar la imagen de perfil actual
+	*/
 	function focusProfile() {
-		let perfil = document.querySelector('.admin-perfil')
-		let imagenes = Array.from(document.querySelectorAll('.swiper-slide'))
+		const perfil = document.querySelector('.admin-perfil')
+		const imagenes = Array.from(document.querySelectorAll('.swiper-slide'))
 		for(let imagen of imagenes) {
 			if(imagen.src === perfil.src) {
 				imagen.classList.add('perfil-actual')
@@ -39,74 +54,70 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	}
 
+	/**
+	 * Funcion para realizar acciones con la imagen
+	 * 
+	 * @param {object} e - Mouse event
+	*/
 	function accionesConLaImagen(e) {
 		if(e.target.tagName === 'IMG') {
-			let public_id = e.target.dataset.publicId
-			if(public_id) {
+			const { publicId = null } = e.target.dataset
+			if(publicId) {
 				let inputOptions = {
-					'elegir': 'Perfil',
+					'perfil': 'Perfil',
 					'borrar': 'Borrar',
 					'nada': 'Nada'
 				}
-				const { value: action } = Swal.fire({
-					title: '¿Qué quieres hacer con la imagen?',
-					input: 'radio',
-					inputOptions: inputOptions,
-					inputValidator: (value) => {
-						if(!value) {
-						  return '¡Elige una opción!'
-						}
-					}
-				})
-				.then(resultado => {
-					if(resultado.isConfirmed) {
-						switch (resultado.value) {
-							case 'elegir':
-								usarImagenPara('cambiar-imagen-perfil', public_id, 'administracion')
-								break
-							case 'borrar':
-								Swal.fire({
-									title: '¿Quieres hacerlo?',
-									text: 'Esto no se puede revertir',
-									icon: 'warning',
-									showCancelButton: true,
-									confirmButtonColor: '#3085d6',
-									cancelButtonColor: '#d33',
-									confirmButtonText: 'Si, borrar',
-									cancelButtonText: 'No, cancelar'
-								})
-								.then(res => {
-									if(res.isConfirmed) {
-										usarImagenPara('eliminar-imagen', public_id, 'administracion')
-									}
-								})
-								break
-							case 'nada':
-								// no hacer nada
-								break
-						}
+				SwalChoose(inputOptions, (value) => {
+					switch (value) {
+						case 'perfil':
+							usarImagenPara('cambiar-imagen-perfil', publicId, 'administracion')
+							break
+						case 'borrar':
+							SwalDelete(() => {
+								usarImagenPara('eliminar-imagen', publicId, 'administracion')
+							})
+							break
+						case 'nada':
+							return
+						default:
+							return
 					}
 				})
 			}
 		}
-		function usarImagenPara(ruta, publicid, redirigir) {
-			let loaderContainer = document.querySelector('.loader-container')
-			loaderContainer.classList.remove('d-none')
-			let url = `${location.origin}/${ruta}/${publicid}`
-			axios.post(url, { params: { url } })
-			.then(response => {
-				if(response.status === 200) {
-					loaderContainer.classList.add('d-none')
-					Toast('success', response.data)
-					setTimeout(() => {
-						location.href = `${location.origin}/${redirigir}`
-					}, 2900)
-				}
-			})
-			.catch(err => {
-				loaderContainer.classList.add('d-none')
-				Toast('error', 'Ha ocurrido un error')
-			})
+	}
+
+	/**
+	 * Funcion para realizar las peticiones al servidor
+	 * 
+	 * @param {string} ruta - endpoint
+	 * @param {string} publicid - public id of the image
+	 * @param {string} redirigir - route to redirect
+	*/
+	function usarImagenPara(ruta, publicid, redirigir) {
+		const loaderContainer = document.querySelector('.loader-container')
+		loaderContainer.classList.remove('d-none')
+		const url = `${location.origin}/${ruta}/${publicid}`
+		const options = {
+			url,
+			method: 'POST',
+			params: {
+				url
+			}
 		}
+		AxiosRequest(options, (err, res) => {
+			if (err) {
+				loaderContainer.classList.add('d-none')
+				return Toast('error', res.message)
+			}
+			if (res.status === 200) {
+				loaderContainer.classList.add('d-none')
+				Toast('success', res.data)
+				setTimeout(() => {
+					location.href = `${location.origin}/${redirigir}`
+				}, 2900)
+			}
+		})
 	}
 })

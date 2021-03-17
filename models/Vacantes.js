@@ -3,6 +3,12 @@ mongoose.Promise = global.Promise
 const slug = require('slug')
 const { nanoid } = require('nanoid')
 
+/**
+ * Modulo que contiene el modelo de la vacante
+ *
+ * @module models/Vacantes
+*/
+
 const vacantesSchema = new mongoose.Schema({
 	titulo: {
 		type: String,

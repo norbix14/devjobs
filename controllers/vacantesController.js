@@ -1,107 +1,210 @@
-const mongoose = require('mongoose')
+const { model } = require('mongoose')
 const { body, validationResult } = require('express-validator')
-const Vacante = mongoose.model('Vacante')
-const Cv = mongoose.model('Cv')
+const Vacante = model('Vacante')
+const Cv = model('Cv')
 
+/**
+ * Modulo para manejar las acciones con las vacantes
+ * 
+ * @module controllers/vacantesController
+*/
+
+/**
+ * Funcion para verificar el autor de una vacante
+ * 
+ * @param {object} vacante - vacancy data
+ * @param {object} usuario - user data
+ * @returns {boolean}
+*/
 const verificarAutor = (vacante = {}, usuario = {}) => {
-	if(!vacante.autor.equals(usuario._id)) {
+	const { autor = '' } = vacante
+	const { _id = '' } = usuario
+	if(!autor.equals(_id)) {
 		return false
 	}
 	return true
 }
 
+/**
+ * Funcion para mostrar un formulario para crear una nueva vacante
+ * 
+ * @param {object} req - user request
+ * @param {object} res - server response
+*/
 exports.formularioNuevaVacante = (req, res) => {
+	const { user = {} } = req
+	const { nombre, imagen } = user
 	res.render('nueva-vacante', {
 		nombrePagina: 'Nueva vacante',
 		tagline: 'Completa el formulario y publica tu vacante',
 		cerrarSesion: true,
-		nombre: req.user.nombre,
-		imagen: req.user.imagen
+		nombre,
+		imagen
 	})
 }
 
+/**
+ * Funcion para agregar una nueva vacante
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+*/
 exports.agregarVacante = async (req, res) => {
-	const vacante = new Vacante(req.body)
-	vacante.autor = req.user._id
-	vacante.skills = req.body.skills.split(',')
-	const nuevaVacante = await vacante.save()
-	req.flash('correcto', 'Vacante creada correctamente. Mira como quedó!')
-	res.redirect(`/vacantes/${nuevaVacante.url}`)
+	const { body, user = {} } = req
+	const { _id = '' } = user
+	const vacante = new Vacante(body)
+	vacante.autor = _id
+	vacante.skills = body.skills.split(',')
+	try {
+		const { url } = await vacante.save()
+		req.flash('correcto', 'Vacante creada correctamente')
+		return res.redirect(`/vacantes/${url}`)
+	} catch (err) {
+		req.flash('error', 'Ha ocurrido un error')
+		return res.redirect('/')
+	}
 }
 
+/**
+ * Funcion para mostrar una vacante
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+ * @param {function} next - next function
+*/
 exports.mostrarVacante = async (req, res, next) => {
-	const vacante = await Vacante.findOne({ url: req.params.url }).populate('autor')
-	if(!vacante) return next()
-	res.render('vacante', {
-		vacante,
-		nombrePagina: vacante.titulo,
-		barra: true
-	})
-}
-
-exports.contactar = async (req, res, next) => {
-	const vacante = await Vacante.findOne({ url: req.params.url })
-	if(!vacante) return next()
-	const campos = [
-	  body('nombre').not().isEmpty().withMessage('El nombre es obligatorio').escape(),
-	  body('email').isEmail().withMessage('El email es obligatorio').normalizeEmail(),
-	  body('cv').isURL().withMessage('La URL es obligatoria')
-	]
-	await Promise.all(campos.map(campo => campo.run(req)))
-	const errores = validationResult(req)
-  if(errores.isEmpty()) {
-		const nuevoCandidato = {
-			nombre: req.body.nombre,
-			email: req.body.email,
-			cv: req.body.cv,
-			vacante: vacante._id
-		}
-		vacante.candidatos.push(nuevoCandidato)
-		const cvCandidato = new Cv(nuevoCandidato)
-		await cvCandidato.save()
-		await vacante.save()
-		req.flash('correcto', 'Gracias, tus datos fueron enviados')
-		return res.redirect('/')
-  } else {
-    req.flash('error', errores.array().map(error => error.msg))
-		return res.redirect('/')
-  }
-}
-
-exports.formEditarVacante = async (req, res, next) => {
-	const vacante = await Vacante.findOne({ url: req.params.url })
-	if(!vacante) return next()
-	if(vacante.autor.toString() === req.user._id.toString()) {
-		res.render('editar-vacante', {
+	const { params } = req
+	const { url } = params
+	try {
+		const vacante = await Vacante.findOne({ url }).populate('autor')
+		if (!vacante) return next()
+		return res.render('vacante', {
 			vacante,
-			nombrePagina: `Editar ${vacante.titulo}`,
-			cerrarSesion: true,
-			nombre: req.user.nombre,
-			imagen: req.user.imagen
+			nombrePagina: vacante.titulo,
+			barra: true
 		})
-	} else {
-		req.flash('error', 'Esta vacante no te pertenece y no la puedes editar')
+	} catch (err) {
+		return res.render('vacante', {
+			vacante: [],
+			nombrePagina: 'Vacante ausente',
+			barra: true
+		})
+	}
+}
+
+/**
+ * Funcion para guardar los datos del postulante en la BBDD
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+ * @param {function} next - next function
+*/
+exports.contactar = async (req, res, next) => {
+	const { params, body: reqbody } = req
+	const { url } = params
+	const { nombre, email, cv } = reqbody
+	try {
+		const vacante = await Vacante.findOne({ url })
+		if (!vacante) return next()
+		const campos = [
+			body('nombre').not().isEmpty().withMessage('El nombre es obligatorio').escape(),
+			body('email').isEmail().withMessage('El email es obligatorio').normalizeEmail(),
+			body('cv').isURL().withMessage('La URL es obligatoria')
+		]
+		await Promise.all(campos.map(campo => campo.run(req)))
+		const errores = validationResult(req)
+		if (errores.isEmpty()) {
+			const nuevoCandidato = {
+				nombre,
+				email,
+				cv,
+				vacante: vacante._id
+			}
+			vacante.candidatos.push(nuevoCandidato)
+			const cvCandidato = new Cv(nuevoCandidato)
+			await cvCandidato.save()
+			await vacante.save()
+			req.flash('correcto', 'Gracias, tus datos fueron enviados')
+			return res.redirect('/')
+		} else {
+			req.flash('error', errores.array().map(error => error.msg))
+			return res.redirect('/')
+		}
+	} catch (err) {
+		req.flash('error', 'Ha ocurrido un error')
+		return res.redirect('/')
+	}
+}
+
+/**
+ * Funcion para mostrar un formulario para editar una vacante
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+ * @param {function} next - next function
+*/
+exports.formEditarVacante = async (req, res, next) => {
+	const { params, user = {} } = req
+	const { url } = params
+	const { _id, nombre, imagen } = user
+	try {
+		const vacante = await Vacante.findOne({ url })
+		if (!vacante) return next()
+		if (vacante.autor.toString() === _id.toString()) {
+			res.render('editar-vacante', {
+				vacante,
+				nombrePagina: `Editar ${vacante.titulo}`,
+				cerrarSesion: true,
+				nombre,
+				imagen
+			})
+		} else {
+			req.flash('error', 'Esta vacante no te pertenece y no la puedes editar')
+			res.redirect('/')
+		}
+	} catch (err) {
+		req.flash('error', 'Ha ocurrido un error')
 		res.redirect('/')
 	}
 }
 
+/**
+ * Funcion para editar una vacante
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+*/
 exports.editarVacante = async (req, res) => {
-	const vacanteActualizada = req.body
-	vacanteActualizada.skills = req.body.skills.split(',')
-	const vacante = await Vacante.findOneAndUpdate(
-		{
-			url: req.params.url
-		},
-		vacanteActualizada,
-		{
-			new: true,
-			runValidators: true
-		}
-	)
-	req.flash('correcto', 'Vacante editada correctamente. Mira como quedó!')
-	res.redirect(`/vacantes/${vacante.url}`)
+	const { body, params } = req
+	const { url } = params
+	const vacanteActualizada = body
+	vacanteActualizada.skills = body.skills.split(',')
+	try {
+		const vacante = await Vacante.findOneAndUpdate(
+			{
+				url
+			},
+			vacanteActualizada,
+			{
+				new: true,
+				runValidators: true
+			}
+		)
+		req.flash('correcto', 'Vacante editada correctamente')
+		res.redirect(`/vacantes/${vacante.url}`)
+	} catch (err) {
+		req.flash('error', 'Ha ocurrido un error')
+		res.redirect('/')
+	}
 }
 
+/**
+ * Funcion para validar una vacante
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+ * @param {function} next - next function
+*/
 exports.validarVacante = async (req, res, next) => {
 	const campos = [
 		body('titulo').not().isEmpty().withMessage('El titulo es obligatorio').escape(),
@@ -127,38 +230,80 @@ exports.validarVacante = async (req, res, next) => {
   next()
 }
 
+/**
+ * Funcion para eliminar una vacante de la BBDD
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+*/
 exports.eliminarVacante = async (req, res) => {
-	const vacante = await Vacante.findById(req.params.id)
-	if(verificarAutor(vacante, req.user)) {
-		await vacante.remove()
-		res.status(200).send('Vacante eliminada correctamente')
-	} else {
-		res.status(403).send('Error. Acción prohibida')
+	const { params, user = {} } = req
+	const { id } = params
+	try {
+		const vacante = await Vacante.findById(id)
+		if (verificarAutor(vacante, user)) {
+			await Cv.deleteMany({ vacante: id })
+			await vacante.remove()
+			return res.status(200).send('Vacante eliminada correctamente')
+		} else {
+			return res.status(403).send('Error. Acción prohibida')
+		}
+	} catch (err) {
+		return res.status(500).send('Ha ocurrido un error')
 	}
 }
 
+/**
+ * Funcion para mostrar los candidatos de una vacante
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+ * @param {function} next - next function
+*/
 exports.mostrarCandidatos = async (req, res, next) => {
-	const vacante = await Vacante.findById(req.params.id)
-	if(vacante.autor.toString() !== req.user._id.toString()) return next()
-	if(!vacante) return next()
-	res.render('candidatos', {
-		nombrePagina: `Candidatos de ${vacante.titulo}`,
-		cerrarSesion: true,
-		nombre: req.user.nombre,
-		imagen: req.user.imagen,
-		candidatos: vacante.candidatos
-	})
+	const { params, user = {} } = req
+	const { id } = params
+	const { _id, nombre, imagen } = user
+	try {
+		const vacante = await Vacante.findById(id)
+		if (!vacante) return next()
+		const { autor, titulo, candidatos } = vacante
+		if (autor.toString() !== _id.toString()) return next()
+		return res.render('candidatos', {
+			nombrePagina: `Candidatos de ${titulo}`,
+			cerrarSesion: true,
+			nombre,
+			imagen,
+			candidatos
+		})
+	} catch (err) {
+		req.flash('error', 'Ha ocurrido un error')
+		return res.redirect('/')
+	}
 }
 
+/**
+ * Funcion para buscar vacantes
+ *
+ * @param {object} req - user request
+ * @param {object} res - server response
+*/
 exports.buscarVacantes = async (req, res) => {
-	const vacantes = await Vacante.find({
-		$text: {
-			$search: req.body.q
-		}
-	})
-	res.render('home', {
-		nombrePagina: `Resultados para: ${req.body.q}`,
-		barra: true,
-		vacantes
-	})
+	const { body } = req
+	const { q = '' } = body
+	try {
+		const vacantes = await Vacante.find({
+			$text: {
+				$search: q
+			}
+		})
+		return res.render('home', {
+			nombrePagina: `Resultados para: ${q}`,
+			barra: true,
+			vacantes
+		})
+	} catch (err) {
+		req.flash('error', 'Ha ocurrido un error')
+		return res.redirect('/')
+	}
 }

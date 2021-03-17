@@ -5,6 +5,12 @@ const homeController = require('../controllers/homeController')
 const usuariosController = require('../controllers/usuariosController')
 const vacantesController = require('../controllers/vacantesController')
 
+/**
+ * Modulo para manejar el enrutamiento
+ * 
+ * @module routes/index
+*/
+
 module.exports = () => {
 	/* Inicio */
 	// mostrar todas las vacantes

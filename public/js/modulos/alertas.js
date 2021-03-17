@@ -1,7 +1,13 @@
+/**
+ * Modulo para manejar las alertas
+ * 
+ * @module modulos/alertas
+*/
+
 document.addEventListener('DOMContentLoaded', function() {
-	let alertas = document.querySelector('.alertas')
+	const alertas = document.querySelector('.alertas')
 	if(alertas) {
-		let interval = setInterval(() => {
+		const interval = setInterval(() => {
 			if(alertas.children.length > 0) {
 				alertas.removeChild(alertas.children[0])
 			} else if (alertas.children.length === 0) {

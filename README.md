@@ -34,13 +34,13 @@ Ejecutar la **[App](http://localhost:5000)** (elegir puerto a gusto)
 
 **En etapa de desarrollo**
 
-		npm run desarrollo
+		npm run development
 
 Ejecuta `nodemon ./index.js` y `webpack --watch --mode development` mediante `concurrently`
 
 **En etapa de produccion**
 
-		npm run produccion
+		npm run production
 
 Ejecuta `nodemon ./index.js` y `webpack --mode production` mediante `concurrently`
 

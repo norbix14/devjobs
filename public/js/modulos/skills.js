@@ -1,7 +1,13 @@
+/**
+ * Modulo para manejar las habilidades
+ * 
+ * @module modulos/skills
+*/
+
 document.addEventListener('DOMContentLoaded', function() {
-	let listaSkills = document.querySelector('.lista-conocimientos')
+	const listaSkills = document.querySelector('.lista-conocimientos')
 	if(listaSkills) {
-		let inputHiddenSkills = document.querySelector('#skills')
+		const inputHiddenSkills = document.querySelector('#skills')
 		const skills = new Set()
 		listaSkills.addEventListener('click', e => {
 			if(e.target.tagName === 'LI') {
@@ -13,14 +19,14 @@ document.addEventListener('DOMContentLoaded', function() {
 					e.target.classList.add('activo')
 				}
 			}
-			let skillsArray = [...skills]
+			const skillsArray = [...skills]
 			inputHiddenSkills.value = skillsArray
 		})
-		let seleccionadas = Array.from(document.querySelectorAll('.lista-conocimientos .activo'))
+		const seleccionadas = Array.from(document.querySelectorAll('.lista-conocimientos .activo'))
 		seleccionadas.forEach(seleccionada => {
 			skills.add(seleccionada.textContent)
 		})
-		let skillsArray = [...skills]
+		const skillsArray = [...skills]
 		inputHiddenSkills.value = skillsArray
 	}
 })

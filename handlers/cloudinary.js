@@ -1,7 +1,13 @@
-require('dotenv').config({ path: 'variables.env' })
+require('dotenv').config()
 const cloudinary = require('cloudinary').v2
 const Imagen = require('../models/Imagen')
 const resResponse = require('../helpers/res-response')
+
+/**
+ * Modulo que se encarga del manejo de Cloudinary
+ * 
+ * @module handlers/cloudinary
+*/
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,6 +15,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
+/**
+ * Funcion para subir la imagen a Cloudinary
+ * 
+ * @param {string} image - image
+ * @param {string} owner - photo owner
+ * 
+ * @returns {object} object response. `ok`: boolean,
+ * `message`: string
+*/
 exports.subirCloudinary = async (image, owner) => {
   try {
     const { 
@@ -29,6 +44,13 @@ exports.subirCloudinary = async (image, owner) => {
   }
 }
 
+/**
+ * Funcion para eliminar una imagen de la BBDD
+ * 
+ * @param {string} id - image id
+ * @returns {object} object response. `ok`: boolean,
+ * `message`: string
+*/
 exports.eliminarImagen = async id => {
   try {
   	const { public_id } = await Imagen.findByIdAndRemove(id)
@@ -39,6 +61,13 @@ exports.eliminarImagen = async id => {
   }
 }
 
+/**
+ * Funcion para eliminar una imagen de Cloudinary
+ * 
+ * @param {string} publicid - the public id of the image
+ * @returns {object} object response. `ok`: boolean,
+ * `message`: string
+*/
 exports.eliminarCloudinary = async publicid => {
   try {
     await cloudinary.uploader.destroy(publicid)

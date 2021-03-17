@@ -1,5 +1,4 @@
 /node_modules
-variables.env
 .env
 .DS_Store
 TODO.md
