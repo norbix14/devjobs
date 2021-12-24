@@ -30,7 +30,7 @@ Instalar las dependencias necesarias
 
 		npm i
 
-Ejecutar la **[App](http://localhost:5000)** (elegir puerto a gusto)
+Ejecutar la **[App](http://localhost:4000)** (elegir puerto a gusto)
 
 **En etapa de desarrollo**
 
@@ -57,3 +57,17 @@ Ejecuta `node ./index.js`
 **[Cloudinary](https://cloudinary.com/ "Para subir las imagenes de la página")**
 
 **[MongoDBAtlas](https://cloud.mongodb.com/user#/atlas/login "Guardar datos de las vacantes y los usuarios")**
+
+### Variables de entorno
+
+```
+	SESSION_SECRET="<string>"
+	SESSION_KEY="<string>"
+
+	MONGODB_DATABASE="mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority"
+
+	CLOUDINARY_URL_FRONTEND="https://api.cloudinary.com/v1_1/<cloudname>/image/upload"
+	CLOUDINARY_CLOUD_NAME="<cloudname>"
+	CLOUDINARY_API_SECRET="<string>"
+	CLOUDINARY_API_KEY=<number>
+```

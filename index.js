@@ -15,7 +15,7 @@ const flash = require('connect-flash')
 const createError = require('http-errors')
 const passport = require('./config/passport')
 
-const port = Number(process.env.PORT)
+const port = Number(process.env.PORT) || 4000
 const host = '0.0.0.0'
 
 const app = express()
